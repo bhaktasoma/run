@@ -4,7 +4,7 @@ const DASH = "—";
 
 const plan: Plan = {
   id: "2026-09",
-  title: "September 2026 Training Plan",
+  title: "September Training Plan",
   intro: "Your September goal is not yet to run 9–10 min/mile. It’s to build the engine that eventually gets you there.",
   priorities: [
     "5 running days per week",

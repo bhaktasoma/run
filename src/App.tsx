@@ -3,9 +3,10 @@ import plans from "./data/plans";
 import workoutPlan from "./data/workoutPlan";
 import PlanPage from "./components/PlanPage";
 import WorkoutPlanPage from "./components/WorkoutPlanPage";
+import GoalPage from "./components/GoalPage";
 import "./App.css";
 
-type Page = { kind: "plan"; id: string } | { kind: "workout" };
+type Page = { kind: "plan"; id: string } | { kind: "workout" } | { kind: "goal" };
 
 const monthOptions = Array.from({ length: 12 }, (_, index) => {
   const date = new Date(2026, 7 + index, 1);
@@ -23,6 +24,10 @@ function App() {
   return (
     <div className="app">
       <nav className="app__nav">
+        <div className="app__brand" aria-label="Run Training home">
+          <span className="app__brand-mark">R</span>
+          <span className="app__brand-name">Run Training</span>
+        </div>
         <label className="app__month-picker">
           <span className="sr-only">Select training plan month</span>
           <select
@@ -30,7 +35,7 @@ function App() {
             value={page.kind === "plan" ? page.id : ""}
             onChange={(event) => setPage({ kind: "plan", id: event.target.value })}
           >
-            {page.kind === "workout" && <option value="">Select month</option>}
+            {page.kind !== "plan" && <option value="">Select month</option>}
             {monthOptions.map((month) => (
               <option key={month.id} value={month.id}>
                 {month.label}
@@ -45,9 +50,18 @@ function App() {
         >
           Workout Plan
         </button>
+        <button
+          type="button"
+          className={page.kind === "goal" ? "app__nav-btn is-active" : "app__nav-btn"}
+          onClick={() => setPage({ kind: "goal" })}
+        >
+          Goal
+        </button>
       </nav>
 
-      {page.kind === "workout" ? (
+      {page.kind === "goal" ? (
+        <GoalPage />
+      ) : page.kind === "workout" ? (
         <WorkoutPlanPage plan={workoutPlan} />
       ) : selectedPlan ? (
         <PlanPage plan={selectedPlan} />

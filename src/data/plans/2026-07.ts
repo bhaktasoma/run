@@ -4,7 +4,7 @@ const DASH = "—";
 
 const plan: Plan = {
   id: "2026-08",
-  title: "Agust Training Plan",
+  title: "August Training Plan",
   weeks: [
     {
       title: "Week 1",

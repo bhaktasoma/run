@@ -1,16 +1,55 @@
 .app {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 32px 20px 64px;
+  padding: 0 20px 64px;
 }
 
 .app__nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px;
+  min-height: 68px;
+  margin-right: calc(50% - 50vw);
+  margin-bottom: 32px;
+  margin-left: calc(50% - 50vw);
+  padding-right: max(20px, calc((100vw - 1200px) / 2 + 20px));
+  padding-left: max(20px, calc((100vw - 1200px) / 2 + 20px));
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow: 0 8px 24px rgba(8, 6, 13, 0.06);
+  backdrop-filter: blur(14px);
+}
+
+.app__brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-right: 8px;
+  padding-right: 18px;
+  border-right: 1px solid var(--border);
+  color: var(--text-h);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.app__brand-mark {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--accent), #6d28d9);
+  color: white;
+  font-size: 15px;
+  box-shadow: 0 5px 14px var(--accent-border);
+}
+
+.app__brand-name {
+  letter-spacing: -0.01em;
 }
 
 .app__month-picker {
@@ -63,6 +102,12 @@
   background: var(--surface);
   color: var(--text);
   cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
+}
+
+.app__nav-btn:hover {
+  border-color: var(--accent-border);
+  transform: translateY(-1px);
 }
 
 .app__nav-btn.is-active {
@@ -133,13 +178,168 @@
   color: var(--text-h);
 }
 
+.goal-page__hero {
+  position: relative;
+  overflow: hidden;
+  padding: 40px;
+  border: 1px solid var(--accent-border);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 90% 10%, var(--accent-bg), transparent 42%),
+    var(--surface);
+  margin-bottom: 24px;
+}
+
+.goal-page__eyebrow {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.goal-page__hero h1 {
+  max-width: 720px;
+  font-size: clamp(34px, 6vw, 58px);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.goal-page__intro {
+  max-width: 680px;
+  margin: 18px 0 0;
+  font-size: 18px;
+}
+
+.goal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.goal-card {
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.goal-card__number {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 18px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.goal-card h2 {
+  margin-bottom: 8px;
+  font-size: 24px;
+}
+
+.goal-card__metric {
+  margin: 16px 0;
+  padding: 14px 16px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-bg);
+  color: var(--text-h);
+  font-weight: 600;
+}
+
+.goal-card p:last-child {
+  margin-bottom: 0;
+}
+
+.knowledge-section {
+  margin-top: 40px;
+}
+
+.knowledge-section__header {
+  max-width: 720px;
+  margin-bottom: 20px;
+}
+
+.knowledge-section__header h2 {
+  margin-bottom: 8px;
+  font-size: 28px;
+}
+
+.knowledge-section__header > p:last-child {
+  margin: 0;
+}
+
+.knowledge-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.knowledge-card {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.knowledge-card dt {
+  margin-bottom: 6px;
+  color: var(--text-h);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.knowledge-card dd {
+  margin: 0;
+}
+
+.knowledge-section__note {
+  margin-top: 16px;
+  padding: 18px 20px;
+  border: 1px solid var(--accent-border);
+  border-radius: 12px;
+  background: var(--accent-bg);
+}
+
 @media (max-width: 600px) {
+  .app__nav {
+    gap: 8px;
+    min-height: 62px;
+    overflow-x: auto;
+  }
+
+  .app__brand {
+    margin-right: 0;
+    padding-right: 10px;
+  }
+
+  .app__brand-name {
+    display: none;
+  }
+
   .app__month-select {
-    min-width: 180px;
+    min-width: 165px;
   }
 
   .plan-priorities {
     columns: 1;
+  }
+
+  .goal-page__hero {
+    padding: 28px 22px;
+  }
+
+  .goal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .knowledge-grid {
+    grid-template-columns: 1fr;
   }
 }
 
