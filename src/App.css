@@ -19,15 +19,13 @@
 
 .app__month-select {
   appearance: none;
-  min-width: 260px;
-  padding: 8px 44px 8px 0;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  background: transparent;
-  color: var(--text-h);
+  min-width: 190px;
+  padding: 8px 40px 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: var(--surface);
+  color: var(--text);
   font: inherit;
-  font-size: 32px;
-  font-weight: 700;
   cursor: pointer;
   background-image:
     linear-gradient(45deg, transparent 50%, currentColor 50%),
@@ -41,7 +39,7 @@
 
 .app__month-select:hover,
 .app__month-select:focus-visible {
-  border-bottom-color: var(--accent-border);
+  border-color: var(--accent-border);
   outline: none;
 }
 
@@ -137,8 +135,7 @@
 
 @media (max-width: 600px) {
   .app__month-select {
-    min-width: 220px;
-    font-size: 26px;
+    min-width: 180px;
   }
 
   .plan-priorities {
