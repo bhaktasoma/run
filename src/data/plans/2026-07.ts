@@ -3,8 +3,8 @@ import type { Plan } from "../../types";
 const DASH = "—";
 
 const plan: Plan = {
-  id: "2026-07",
-  title: "July – August 2026",
+  id: "2026-08",
+  title: "Agust Training Plan",
   weeks: [
     {
       title: "Week 1",

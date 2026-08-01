@@ -7,24 +7,37 @@ import "./App.css";
 
 type Page = { kind: "plan"; id: string } | { kind: "workout" };
 
+const monthOptions = Array.from({ length: 12 }, (_, index) => {
+  const date = new Date(2026, 7 + index, 1);
+
+  return {
+    id: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`,
+    label: date.toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+  };
+});
+
 function App() {
-  const [page, setPage] = useState<Page>({ kind: "plan", id: plans[plans.length - 1].id });
+  const [page, setPage] = useState<Page>({ kind: "plan", id: monthOptions[0].id });
+  const selectedPlan = page.kind === "plan" ? plans.find((plan) => plan.id === page.id) : undefined;
 
   return (
     <div className="app">
       <nav className="app__nav">
-        {plans.map((plan) => (
-          <button
-            key={plan.id}
-            type="button"
-            className={
-              page.kind === "plan" && page.id === plan.id ? "app__nav-btn is-active" : "app__nav-btn"
-            }
-            onClick={() => setPage({ kind: "plan", id: plan.id })}
+        <label className="app__month-picker">
+          <span className="sr-only">Select training plan month</span>
+          <select
+            className="app__month-select"
+            value={page.kind === "plan" ? page.id : ""}
+            onChange={(event) => setPage({ kind: "plan", id: event.target.value })}
           >
-            {plan.title}
-          </button>
-        ))}
+            {page.kind === "workout" && <option value="">Select month</option>}
+            {monthOptions.map((month) => (
+              <option key={month.id} value={month.id}>
+                {month.label}
+              </option>
+            ))}
+          </select>
+        </label>
         <button
           type="button"
           className={page.kind === "workout" ? "app__nav-btn is-active" : "app__nav-btn"}
@@ -36,8 +49,13 @@ function App() {
 
       {page.kind === "workout" ? (
         <WorkoutPlanPage plan={workoutPlan} />
+      ) : selectedPlan ? (
+        <PlanPage plan={selectedPlan} />
       ) : (
-        <PlanPage plan={plans.find((plan) => plan.id === page.id) ?? plans[0]} />
+        <div className="plan-page__empty">
+          <h1>{monthOptions.find((month) => month.id === page.id)?.label}</h1>
+          <p>No training plan has been added for this month yet.</p>
+        </div>
       )}
     </div>
   );

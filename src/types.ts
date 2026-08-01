@@ -20,7 +20,22 @@ export interface Week {
 export interface Plan {
   id: string;
   title: string;
+  intro?: string;
+  priorities?: string[];
+  beforeWeeks?: PlanSection[];
+  afterWeeks?: PlanSection[];
   weeks: Week[];
+}
+
+export interface PlanSection {
+  title?: string;
+  paragraphs?: string[];
+  bullets?: string[];
+  table?: {
+    headers: string[];
+    rows: string[][];
+  };
+  callout?: boolean;
 }
 
 export interface LiftRow {

@@ -6,9 +6,55 @@
 
 .app__nav {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
   margin-bottom: 24px;
   flex-wrap: wrap;
+}
+
+.app__month-picker {
+  position: relative;
+}
+
+.app__month-select {
+  appearance: none;
+  min-width: 260px;
+  padding: 8px 44px 8px 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-h);
+  font: inherit;
+  font-size: 32px;
+  font-weight: 700;
+  cursor: pointer;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 16px) 52%,
+    calc(100% - 10px) 52%;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.app__month-select:hover,
+.app__month-select:focus-visible {
+  border-bottom-color: var(--accent-border);
+  outline: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .app__nav-btn {
@@ -29,7 +75,75 @@
 
 .plan-page__title {
   font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.plan-page__header {
   margin-bottom: 24px;
+}
+
+.plan-page__header p {
+  max-width: 760px;
+  margin: 0;
+}
+
+.plan-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.plan-section h2 {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.plan-section p:last-child,
+.plan-section ul:last-child {
+  margin-bottom: 0;
+}
+
+.plan-section--callout {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+}
+
+.plan-section__table-wrap {
+  overflow-x: auto;
+}
+
+.plan-priorities {
+  columns: 2;
+  padding-left: 20px;
+}
+
+.plan-priorities li {
+  break-inside: avoid;
+  padding: 3px 0;
+}
+
+.plan-page__empty {
+  padding: 48px 0;
+  text-align: center;
+  color: var(--text);
+}
+
+.plan-page__empty h1 {
+  margin-bottom: 8px;
+  color: var(--text-h);
+}
+
+@media (max-width: 600px) {
+  .app__month-select {
+    min-width: 220px;
+    font-size: 26px;
+  }
+
+  .plan-priorities {
+    columns: 1;
+  }
 }
 
 .week-card,
