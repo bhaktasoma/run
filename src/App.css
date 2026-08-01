@@ -1,0 +1,266 @@
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 20px 64px;
+}
+
+.app__nav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.app__nav-btn {
+  font: inherit;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.app__nav-btn.is-active {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--text-h);
+}
+
+.plan-page__title {
+  font-size: 32px;
+  margin-bottom: 24px;
+}
+
+.week-card,
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 24px;
+}
+
+.week-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.week-card__header h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 20px;
+}
+
+.week-card__note {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.week-card__subtitle {
+  color: var(--text);
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+.week-card__stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: right;
+}
+
+.week-card__mileage {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.week-card__progress {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.week-card__table-wrap {
+  overflow-x: auto;
+}
+
+.week-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  min-width: 760px;
+}
+
+.week-table th,
+.week-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.week-table th {
+  font-weight: 600;
+  color: var(--text-h);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.week-table td:first-child,
+.week-table th:first-child {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.week-table tbody tr:nth-child(even) {
+  background: var(--row-alt);
+}
+
+.week-table tbody tr.is-checked {
+  background: var(--row-checked);
+}
+
+.week-table td,
+.week-table th {
+  white-space: normal;
+}
+
+.week-table__check-col {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.week-table__check-col input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--check-color);
+  cursor: pointer;
+}
+
+.workout-section {
+  margin-bottom: 32px;
+}
+
+.workout-section__title {
+  font-size: 22px;
+  margin-bottom: 16px;
+}
+
+.workout-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.workout-grid--compact {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.workout-grid .panel,
+.workout-grid .week-card {
+  margin-bottom: 0;
+}
+
+.panel--compact {
+  padding: 16px 20px;
+}
+
+.panel__header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.panel__header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.panel__subtle {
+  font-weight: 400;
+  color: var(--text);
+}
+
+.panel__duration {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.panel__note {
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 12px;
+  font-style: italic;
+}
+
+.panel__footnote {
+  font-size: 13px;
+  color: var(--text);
+  margin-top: 12px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table th {
+  font-weight: 600;
+  color: var(--text-h);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.data-table td:first-child {
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.data-table tbody tr:nth-child(even) {
+  background: var(--row-alt);
+}
+
+.stretch-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 14px;
+}
+
+.stretch-list li {
+  padding: 4px 0;
+}
+
+@media print {
+  .app__nav {
+    display: none;
+  }
+
+  .week-card,
+  .panel {
+    break-inside: avoid;
+    border: 1px solid #ccc;
+  }
+}
