@@ -712,6 +712,33 @@
   background: var(--row-alt);
 }
 
+.workout-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.workout-table__exercise {
+  width: 68%;
+}
+
+.workout-table__number {
+  width: 16%;
+}
+
+.workout-table__exercise--compact {
+  width: 68%;
+}
+
+.workout-table__sets {
+  width: 32%;
+}
+
+.workout-table td,
+.workout-table th {
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+
 .stretch-list {
   margin: 0;
   padding-left: 20px;
@@ -741,7 +768,8 @@
 }
 
 .exercise-reference__content {
-  min-width: 280px;
+  width: 100%;
+  min-width: 0;
   max-width: 390px;
   margin-top: 8px;
   padding: 12px;
@@ -776,6 +804,7 @@
   font-size: 12px;
   font-weight: 700;
   text-decoration: none;
+  white-space: normal;
 }
 
 .exercise-reference__video:hover {
@@ -787,6 +816,7 @@
 }
 
 .exercise-reference__note {
+  width: 100%;
   max-width: 390px;
   margin: 5px 0 0;
   color: var(--text);

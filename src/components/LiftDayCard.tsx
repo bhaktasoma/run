@@ -16,7 +16,12 @@ export default function LiftDayCard({ liftDay }: LiftDayCardProps) {
       </header>
       {liftDay.note && <p className="panel__note">{liftDay.note}</p>}
 
-      <table className="data-table">
+      <table className="data-table workout-table">
+        <colgroup>
+          <col className="workout-table__exercise" />
+          <col className="workout-table__number" />
+          <col className="workout-table__number" />
+        </colgroup>
         <thead>
           <tr>
             <th>Exercise</th>

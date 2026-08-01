@@ -13,7 +13,11 @@ export default function CoreDayCard({ coreDay }: CoreDayCardProps) {
           {coreDay.label} <span className="panel__subtle">({coreDay.day})</span>
         </h3>
       </header>
-      <table className="data-table">
+      <table className="data-table workout-table">
+        <colgroup>
+          <col className="workout-table__exercise--compact" />
+          <col className="workout-table__sets" />
+        </colgroup>
         <thead>
           <tr>
             <th>Exercise</th>

@@ -37,7 +37,11 @@ export default function WorkoutPlanPage({ plan }: WorkoutPlanPageProps) {
             <header className="panel__header">
               <h3>{plan.mobilityBefore.title}</h3>
             </header>
-            <table className="data-table">
+            <table className="data-table workout-table">
+              <colgroup>
+                <col className="workout-table__exercise--compact" />
+                <col className="workout-table__sets" />
+              </colgroup>
               <thead>
                 <tr>
                   <th>Exercise</th>
