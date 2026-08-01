@@ -722,6 +722,79 @@
   padding: 4px 0;
 }
 
+.exercise-reference {
+  margin-top: 5px;
+  font-weight: 400;
+}
+
+.exercise-reference summary {
+  width: fit-content;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+}
+
+.exercise-reference summary:hover {
+  text-decoration: underline;
+}
+
+.exercise-reference__content {
+  min-width: 280px;
+  max-width: 390px;
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  background: var(--accent-bg);
+  white-space: normal;
+}
+
+.exercise-reference__content strong {
+  color: var(--text-h);
+  font-size: 13px;
+}
+
+.exercise-reference__content ul {
+  margin: 5px 0 0;
+  padding-left: 17px;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.exercise-reference__video {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 10px;
+  padding: 7px 11px;
+  border-radius: 7px;
+  background: var(--accent);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.exercise-reference__video:hover {
+  filter: brightness(1.08);
+}
+
+.exercise-reference__video span {
+  font-size: 10px;
+}
+
+.exercise-reference__note {
+  max-width: 390px;
+  margin: 5px 0 0;
+  color: var(--text);
+  font-size: 11px;
+  font-style: italic;
+  white-space: normal;
+}
+
 @media print {
   .app__nav {
     display: none;

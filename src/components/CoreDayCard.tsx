@@ -1,4 +1,5 @@
 import type { CoreDay } from "../types";
+import ExerciseReference from "./ExerciseReference";
 
 interface CoreDayCardProps {
   coreDay: CoreDay;
@@ -22,7 +23,10 @@ export default function CoreDayCard({ coreDay }: CoreDayCardProps) {
         <tbody>
           {coreDay.rows.map((row) => (
             <tr key={row.exercise}>
-              <td>{row.exercise}</td>
+              <td>
+                {row.exercise}
+                <ExerciseReference exercise={row.exercise} />
+              </td>
               <td>{row.sets}</td>
             </tr>
           ))}

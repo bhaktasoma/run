@@ -1,6 +1,7 @@
 import type { WorkoutPlan } from "../types";
 import LiftDayCard from "./LiftDayCard";
 import CoreDayCard from "./CoreDayCard";
+import ExerciseReference from "./ExerciseReference";
 
 interface WorkoutPlanPageProps {
   plan: WorkoutPlan;
@@ -46,7 +47,10 @@ export default function WorkoutPlanPage({ plan }: WorkoutPlanPageProps) {
               <tbody>
                 {plan.mobilityBefore.rows.map((row) => (
                   <tr key={row.exercise}>
-                    <td>{row.exercise}</td>
+                    <td>
+                      {row.exercise}
+                      <ExerciseReference exercise={row.exercise} />
+                    </td>
                     <td>{row.reps}</td>
                   </tr>
                 ))}
@@ -61,7 +65,10 @@ export default function WorkoutPlanPage({ plan }: WorkoutPlanPageProps) {
             <p className="panel__note">{plan.mobilityAfter.note}</p>
             <ul className="stretch-list">
               {plan.mobilityAfter.items.map((item) => (
-                <li key={item}>{item}</li>
+                <li key={item}>
+                  {item}
+                  <ExerciseReference exercise={item} />
+                </li>
               ))}
             </ul>
           </section>

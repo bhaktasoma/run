@@ -1,4 +1,5 @@
 import type { LiftDay } from "../types";
+import ExerciseReference from "./ExerciseReference";
 
 interface LiftDayCardProps {
   liftDay: LiftDay;
@@ -26,7 +27,10 @@ export default function LiftDayCard({ liftDay }: LiftDayCardProps) {
         <tbody>
           {liftDay.rows.map((row) => (
             <tr key={row.exercise}>
-              <td>{row.exercise}</td>
+              <td>
+                {row.exercise}
+                <ExerciseReference exercise={row.exercise} />
+              </td>
               <td>{row.sets}</td>
               <td>{row.reps}</td>
             </tr>
