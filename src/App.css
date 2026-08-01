@@ -306,6 +306,156 @@
   background: var(--accent-bg);
 }
 
+.rpe-guide {
+  margin-top: 32px;
+}
+
+.rpe-guide__header {
+  margin-bottom: 16px;
+}
+
+.rpe-guide__header h3 {
+  margin: 0 0 4px;
+  color: var(--text-h);
+  font-size: 22px;
+}
+
+.rpe-guide__header p {
+  margin: 0;
+}
+
+.rpe-guide__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.rpe-level {
+  display: flex;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.rpe-level--highlight {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+}
+
+.rpe-level__score {
+  display: grid;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.rpe-level h4 {
+  margin: 1px 0 4px;
+  color: var(--text-h);
+  font-size: 16px;
+}
+
+.rpe-level p {
+  margin: 0;
+  font-size: 14px;
+}
+
+.workout-explainer {
+  margin-top: 32px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.workout-explainer__header {
+  margin-bottom: 20px;
+}
+
+.workout-explainer__tag {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.workout-explainer__header h3 {
+  margin: 0 0 6px;
+  color: var(--text-h);
+  font-size: 24px;
+}
+
+.workout-explainer__header p {
+  margin: 0;
+}
+
+.workout-steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.workout-steps li {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--row-alt);
+}
+
+.workout-steps li > span {
+  display: grid;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.workout-steps strong {
+  color: var(--text-h);
+}
+
+.workout-steps p {
+  margin: 3px 0 0;
+  font-size: 14px;
+}
+
+.workout-explainer__summary {
+  margin-top: 16px;
+  padding: 16px 18px;
+  border-left: 3px solid var(--accent);
+  background: var(--accent-bg);
+}
+
+.workout-explainer__summary p {
+  margin: 0 0 6px;
+}
+
+.workout-explainer__summary p:last-child {
+  margin-bottom: 0;
+}
+
 @media (max-width: 600px) {
   .app__nav {
     gap: 8px;
@@ -339,6 +489,14 @@
   }
 
   .knowledge-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rpe-guide__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .workout-steps {
     grid-template-columns: 1fr;
   }
 }
