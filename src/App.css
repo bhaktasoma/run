@@ -255,6 +255,21 @@
   margin-bottom: 0;
 }
 
+.goal-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 14px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.goal-card__link:hover {
+  text-decoration: underline;
+}
+
 .knowledge-section {
   margin-top: 40px;
 }

@@ -2,28 +2,50 @@ export default function GoalPage() {
   return (
     <main className="goal-page">
       <header className="goal-page__hero">
-        <p className="goal-page__eyebrow">2027 Race Goals</p>
+        <p className="goal-page__eyebrow">2027–2028 Race Roadmap</p>
         <h1>Go farther. Finish stronger.</h1>
         <p className="goal-page__intro">
-          Build the endurance, speed, and resilience to take on two meaningful finish lines in 2027.
+          Build speed and endurance through two half marathons before taking on a first full marathon in 2028.
         </p>
       </header>
 
       <div className="goal-grid">
         <section className="goal-card">
           <span className="goal-card__number">01</span>
-          <h2>Half Marathon</h2>
-          <p>Run another half marathon in 2027 with a confident, controlled effort.</p>
-          <p className="goal-card__metric">Target average pace: 10:00 per mile</p>
-          <p>Arrive healthy, hold the goal pace consistently, and finish with strength left in reserve.</p>
+          <h2>First 2027 Half Marathon</h2>
+          <p>Race in late May or early June and use the result to measure progress.</p>
+          <p className="goal-card__metric">Goal: healthy, controlled benchmark</p>
+          <p>Choose the final pace from spring workouts rather than forcing 10:00/mile before it is sustainable.</p>
         </section>
 
         <section className="goal-card">
           <span className="goal-card__number">02</span>
-          <h2>First Marathon</h2>
-          <p>Complete a first full marathon in 2027.</p>
+          <h2>Monterey Bay Half Marathon</h2>
+          <p>Race on November 14, 2027 after a dedicated late-summer and fall training block.</p>
+          <p className="goal-card__metric">Consider 10:00/mile if benchmarks support it</p>
+          <p>Treat the pace as earned by training—not guaranteed by the calendar.</p>
+          <a className="goal-card__link" href="https://www.montereybayhalfmarathon.org/" target="_blank" rel="noreferrer">
+            Official Monterey Bay race site <span aria-hidden="true">↗</span>
+          </a>
+        </section>
+
+        <section className="goal-card">
+          <span className="goal-card__number">03</span>
+          <h2>Spring 2028 Endurance Event</h2>
+          <p>Run an optional half marathon or supported long-run event.</p>
+          <p className="goal-card__metric">Goal: reinforce endurance and fueling</p>
+          <p>Use this event to prepare for marathon training without needing an all-out performance.</p>
+        </section>
+
+        <section className="goal-card">
+          <span className="goal-card__number">04</span>
+          <h2>Long Beach Marathon</h2>
+          <p>Complete the first full marathon in early October 2028 after a dedicated marathon-specific block. Official date to be announced.</p>
           <p className="goal-card__metric">Primary goal: finish strong</p>
           <p>Build patiently, respect the distance, and reach the final miles prepared to keep moving well.</p>
+          <a className="goal-card__link" href="https://runlongbeach.com/" target="_blank" rel="noreferrer">
+            Official Long Beach race site <span aria-hidden="true">↗</span>
+          </a>
         </section>
       </div>
 
