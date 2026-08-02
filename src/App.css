@@ -270,6 +270,37 @@
   text-decoration: underline;
 }
 
+.goal-card__options {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.goal-card__options > div {
+  padding: 13px 14px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--row-alt);
+}
+
+.goal-card__options strong,
+.goal-card__options span {
+  display: block;
+}
+
+.goal-card__options strong {
+  color: var(--text-h);
+}
+
+.goal-card__options span {
+  margin-top: 2px;
+  font-size: 13px;
+}
+
+.goal-card__options .goal-card__link {
+  margin-top: 8px;
+}
+
 .knowledge-section {
   margin-top: 40px;
 }

@@ -39,13 +39,26 @@ export default function GoalPage() {
 
         <section className="goal-card">
           <span className="goal-card__number">04</span>
-          <h2>Long Beach Marathon</h2>
-          <p>Complete the first full marathon in early October 2028 after a dedicated marathon-specific block. Official date to be announced.</p>
+          <h2>First Full Marathon Options</h2>
+          <p>Complete the first full marathon in fall 2028 after a dedicated marathon-specific block. Official 2028 dates are still to be announced.</p>
           <p className="goal-card__metric">Primary goal: finish strong</p>
           <p>Build patiently, respect the distance, and reach the final miles prepared to keep moving well.</p>
-          <a className="goal-card__link" href="https://runlongbeach.com/" target="_blank" rel="noreferrer">
-            Official Long Beach race site <span aria-hidden="true">↗</span>
-          </a>
+          <div className="goal-card__options">
+            <div>
+              <strong>Long Beach Marathon</strong>
+              <span>Early October target · flatter coastal course</span>
+              <a className="goal-card__link" href="https://runlongbeach.com/" target="_blank" rel="noreferrer">
+                Official race site <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+            <div>
+              <strong>Santa Cruz Marathon</strong>
+              <span>Late October alternative · rugged coastal terrain</span>
+              <a className="goal-card__link" href="https://www.runsantacruz.com/" target="_blank" rel="noreferrer">
+                Official race site <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+          </div>
         </section>
       </div>
 
