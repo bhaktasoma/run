@@ -663,6 +663,67 @@
   cursor: pointer;
 }
 
+.fueling-guide {
+  margin-top: 6px;
+}
+
+.fueling-guide summary {
+  width: fit-content;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+}
+
+.fueling-guide summary:hover {
+  text-decoration: underline;
+}
+
+.fueling-guide__panel {
+  width: 100%;
+  min-width: 0;
+  max-width: 480px;
+  margin-top: 8px;
+  padding: 14px;
+  border: 1px solid var(--accent-border);
+  border-radius: 10px;
+  background: var(--accent-bg);
+  white-space: normal;
+}
+
+.fueling-guide__panel > strong {
+  color: var(--text-h);
+  font-size: 13px;
+}
+
+.fueling-guide__panel dl {
+  display: grid;
+  gap: 9px;
+  margin: 10px 0;
+}
+
+.fueling-guide__panel dt {
+  color: var(--text-h);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.fueling-guide__panel dd {
+  margin: 2px 0 0;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.fueling-guide__panel p {
+  margin: 0;
+  padding-top: 9px;
+  border-top: 1px solid var(--accent-border);
+  color: var(--text);
+  font-size: 12px;
+}
+
 .workout-section {
   margin-bottom: 32px;
 }

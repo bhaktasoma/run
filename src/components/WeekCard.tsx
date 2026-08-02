@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Week } from "../types";
 import { formatText } from "../utils/formatText";
+import FuelingGuide from "./FuelingGuide";
 
 interface WeekCardProps {
   week: Week;
@@ -53,7 +54,10 @@ export default function WeekCard({ week }: WeekCardProps) {
               <tr key={entry.day} className={checked[index] ? "is-checked" : undefined}>
                 <td>{entry.day}</td>
                 <td>{entry.date}</td>
-                <td>{formatText(entry.run)}</td>
+                <td>
+                  {formatText(entry.run)}
+                  {(entry.run.includes("Long Run") || entry.run.includes("Marathon")) && <FuelingGuide entry={entry} />}
+                </td>
                 <td>{entry.miles}</td>
                 <td>{formatText(entry.pace)}</td>
                 <td>{formatText(entry.strength)}</td>
