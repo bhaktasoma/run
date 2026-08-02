@@ -4,9 +4,10 @@ import workoutPlan from "./data/workoutPlan";
 import PlanPage from "./components/PlanPage";
 import WorkoutPlanPage from "./components/WorkoutPlanPage";
 import GoalPage from "./components/GoalPage";
+import RunLogPage from "./components/RunLogPage";
 import "./App.css";
 
-type Page = { kind: "plan"; id: string } | { kind: "workout" } | { kind: "goal" };
+type Page = { kind: "plan"; id: string } | { kind: "workout" } | { kind: "goal" } | { kind: "log" };
 
 const monthOptions = Array.from({ length: 27 }, (_, index) => {
   const date = new Date(2026, 7 + index, 1);
@@ -57,9 +58,18 @@ function App() {
         >
           Goal
         </button>
+        <button
+          type="button"
+          className={page.kind === "log" ? "app__nav-btn is-active" : "app__nav-btn"}
+          onClick={() => setPage({ kind: "log" })}
+        >
+          Run Log
+        </button>
       </nav>
 
-      {page.kind === "goal" ? (
+      {page.kind === "log" ? (
+        <RunLogPage />
+      ) : page.kind === "goal" ? (
         <GoalPage />
       ) : page.kind === "workout" ? (
         <WorkoutPlanPage plan={workoutPlan} />
