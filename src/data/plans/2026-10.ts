@@ -65,7 +65,7 @@ const plan: Plan = {
         { day: "Thursday", date: "Oct 15", run: "Recovery", miles: "3", pace: "13:30–14:15", strength: DASH, core: "Core C", mobility: "15 min" },
         { day: "Friday", date: "Oct 16", run: "Rest", miles: DASH, pace: DASH, strength: "Heavy Legs", core: "Core D", mobility: "15 min" },
         { day: "Saturday", date: "Oct 17", run: "Long Run", miles: "10", pace: "12:30–13:15", strength: DASH, core: DASH, mobility: "10 min" },
-        { day: "Sunday", date: "Oct 18", run: "Long Hike", miles: "2–3 hr", pace: "RPE 3–4", strength: "Light Upper", core: DASH, mobility: "10 min" },
+        { day: "Sunday", date: "Oct 18", run: "Long Hike", miles: "2–3 hr", pace: "Comfortable walking pace; RPE 3–4", strength: "Light Upper", core: DASH, mobility: "10 min" },
       ],
     },
     {
@@ -75,7 +75,7 @@ const plan: Plan = {
       weeklyMileage: "31 miles",
       days: [
         { day: "Monday", date: "Oct 19", run: "Easy", miles: "4", pace: "12:45–13:30", strength: "Heavy Upper", core: "Core A", mobility: "10 min" },
-        { day: "Tuesday", date: "Oct 20", run: "Hill Repeats: 7×60 sec", miles: "5", pace: "RPE 7–8 uphill", strength: "Light Legs", core: "Core B", mobility: "10 min" },
+        { day: "Tuesday", date: "Oct 20", run: "Hill Repeats: 7×60 sec", miles: "5", pace: "Pace varies by grade; RPE 7–8 uphill", strength: "Light Legs", core: "Core B", mobility: "10 min" },
         { day: "Wednesday", date: "Oct 21", run: "Easy", miles: "4", pace: "12:45–13:30", strength: "Upper Moderate", core: DASH, mobility: "10 min" },
         { day: "Thursday", date: "Oct 22", run: "Recovery", miles: "3", pace: "13:30–14:15", strength: DASH, core: "Core C", mobility: "15 min" },
         { day: "Friday", date: "Oct 23", run: "Rest", miles: DASH, pace: DASH, strength: "Heavy Legs", core: "Core D", mobility: "15 min" },
@@ -95,7 +95,7 @@ const plan: Plan = {
         { day: "Thursday", date: "Oct 29", run: "Recovery", miles: "3", pace: "13:30–14:15", strength: DASH, core: "Core C", mobility: "15 min" },
         { day: "Friday", date: "Oct 30", run: "Rest", miles: DASH, pace: DASH, strength: "Heavy Legs −20% volume", core: "Core D", mobility: "15 min" },
         { day: "Saturday", date: "Oct 31", run: "Long Run", miles: "8", pace: "12:45–13:30", strength: DASH, core: DASH, mobility: "10 min" },
-        { day: "Sunday", date: "Nov 1", run: "Long Hike", miles: "2–3 hr", pace: "RPE 3–4", strength: "Light Upper", core: DASH, mobility: "10 min" },
+        { day: "Sunday", date: "Nov 1", run: "Long Hike", miles: "2–3 hr", pace: "Comfortable walking pace; RPE 3–4", strength: "Light Upper", core: DASH, mobility: "10 min" },
       ],
     },
   ],
