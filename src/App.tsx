@@ -8,7 +8,7 @@ import "./App.css";
 
 type Page = { kind: "plan"; id: string } | { kind: "workout" } | { kind: "goal" };
 
-const monthOptions = Array.from({ length: 12 }, (_, index) => {
+const monthOptions = Array.from({ length: 27 }, (_, index) => {
   const date = new Date(2026, 7 + index, 1);
 
   return {
