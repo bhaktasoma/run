@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { RunEntry, TrainingStore } from "../domain/training.ts";
 import QuickLogForm from "./QuickLogForm.tsx";
+import { trainingDateIso } from "../utils/trainingDate.ts";
 
 interface RunLogPageProps {
   store: TrainingStore;
@@ -23,7 +24,7 @@ export default function RunLogPage({ store, onSave, onDelete }: RunLogPageProps)
     const header = csvColumns.map((column) => escapeCsv(column.label)).join(",");
     const rows = store.entries.map((entry) => csvColumns.map((column) => escapeCsv(String(entry[column.key] ?? ""))).join(","));
     const url = URL.createObjectURL(new Blob([[header, ...rows].join("\n")], { type: "text/csv;charset=utf-8" }));
-    const link = document.createElement("a"); link.href = url; link.download = `run-log-${new Date().toISOString().slice(0, 10)}.csv`; link.click(); URL.revokeObjectURL(url);
+    const link = document.createElement("a"); link.href = url; link.download = `run-log-${trainingDateIso()}.csv`; link.click(); URL.revokeObjectURL(url);
   };
   const remove = (entry: RunEntry) => {
     if (window.confirm(`Delete the ${entry.workout.toLowerCase()} logged for ${entry.date}?`)) onDelete(entry.id);

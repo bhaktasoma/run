@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { ActiveWorkout, CompletionStatus, PainState, RunEntry, WorkoutResult } from "../domain/training.ts";
+import { trainingDateIso } from "../utils/trainingDate.ts";
 
 interface QuickLogFormProps {
   workout?: ActiveWorkout;
@@ -8,12 +9,10 @@ interface QuickLogFormProps {
   onCancel?: () => void;
 }
 
-const today = () => new Date().toISOString().slice(0, 10);
-
 const makeEntry = (workout?: ActiveWorkout): RunEntry => ({
   id: "",
   workoutId: workout?.id,
-  date: workout?.date ?? today(),
+  date: workout?.date ?? trainingDateIso(),
   workout: workout?.title ?? "Run",
   status: "completed",
   plannedDistance: workout?.plannedMiles ? String(workout.plannedMiles) : "",

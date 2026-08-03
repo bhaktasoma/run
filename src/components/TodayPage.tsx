@@ -2,16 +2,15 @@ import activePlan from "../data/activePlan.ts";
 import { completedMileage, recommendWeek } from "../domain/progression.ts";
 import type { RunEntry, TrainingStore } from "../domain/training.ts";
 import QuickLogForm from "./QuickLogForm.tsx";
+import { daysBetweenIsoDates, trainingDateIso } from "../utils/trainingDate.ts";
 
 interface TodayPageProps {
   store: TrainingStore;
   onSaveEntry: (entry: RunEntry) => void;
 }
 
-const isoToday = () => new Date().toISOString().slice(0, 10);
-
 export default function TodayPage({ store, onSaveEntry }: TodayPageProps) {
-  const today = isoToday();
+  const today = trainingDateIso();
   const currentWeek = activePlan.find((week) => week.workouts.some((workout) => workout.date === today))
     ?? activePlan.find((week) => week.workouts.some((workout) => workout.date > today))
     ?? activePlan.at(-1)!;
@@ -22,8 +21,7 @@ export default function TodayPage({ store, onSaveEntry }: TodayPageProps) {
   const checkIn = store.checkIns.find((item) => item.weekId === currentWeek.id);
   const recommendation = recommendWeek(currentWeek, weekEntries, checkIn);
   const nextLongRun = activePlan.flatMap((week) => week.workouts).find((workout) => workout.isLongRun && workout.date >= today);
-  const raceDate = new Date("2027-11-14T00:00:00");
-  const countdown = Math.max(0, Math.ceil((raceDate.getTime() - new Date(`${today}T00:00:00`).getTime()) / 86_400_000));
+  const countdown = daysBetweenIsoDates(today, "2027-11-14");
   const existing = store.entries.find((entry) => entry.workoutId === todayWorkout.id);
 
   return (

@@ -2,12 +2,13 @@ import { useState } from "react";
 import activePlan from "../data/activePlan.ts";
 import { benchmarkGuidance, completedMileage, recommendWeek } from "../domain/progression.ts";
 import type { BenchmarkEntry, TrainingStore } from "../domain/training.ts";
+import { trainingDateIso } from "../utils/trainingDate.ts";
 
 interface ProgressPageProps { store: TrainingStore; onAddBenchmark: (benchmark: BenchmarkEntry) => void; onSavePaceGuidance: (benchmarkId: string, text: string, accepted: boolean) => void; }
 
 export default function ProgressPage({ store, onAddBenchmark, onSavePaceGuidance }: ProgressPageProps) {
-  const [benchmark, setBenchmark] = useState<Omit<BenchmarkEntry, "id">>({ date: new Date().toISOString().slice(0, 10), type: "Same easy route", distance: "", duration: "", averageRpe: "4", notes: "" });
-  const currentWeek = activePlan.find((week) => week.workouts.some((workout) => workout.date >= new Date().toISOString().slice(0, 10))) ?? activePlan.at(-1)!;
+  const [benchmark, setBenchmark] = useState<Omit<BenchmarkEntry, "id">>({ date: trainingDateIso(), type: "Same easy route", distance: "", duration: "", averageRpe: "4", notes: "" });
+  const currentWeek = activePlan.find((week) => week.workouts.some((workout) => workout.date >= trainingDateIso())) ?? activePlan.at(-1)!;
   const currentEntries = store.entries.filter((entry) => currentWeek.workouts.some((workout) => workout.id === entry.workoutId));
   const recommendation = recommendWeek(currentWeek, currentEntries, store.checkIns.find((item) => item.weekId === currentWeek.id));
   const easyEntries = store.entries.filter((entry) => Number(entry.averageRpe) <= 4 && Number(entry.actualDistance) > 0);

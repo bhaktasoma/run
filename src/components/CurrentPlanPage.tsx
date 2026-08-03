@@ -2,6 +2,7 @@ import { useState } from "react";
 import activePlan from "../data/activePlan.ts";
 import { completedMileage, recommendWeek } from "../domain/progression.ts";
 import type { RecommendationDecision, TrainingStore, WeeklyCheckIn } from "../domain/training.ts";
+import { displayTrainingDate } from "../utils/trainingDate.ts";
 
 interface CurrentPlanPageProps {
   store: TrainingStore;
@@ -36,7 +37,7 @@ export default function CurrentPlanPage({ store, onSaveCheckIn, onSaveDecision }
       <section className="active-week-card">
         <header><div><p className="goal-page__eyebrow">{selectedWeek.status}</p><h2>{selectedWeek.label}</h2><p>{selectedWeek.objective}</p></div><strong>{selectedWeek.plannedMiles} miles</strong></header>
         <div className="active-workout-list">
-          {selectedWeek.workouts.map((workout) => <article key={workout.id}><time dateTime={workout.date}>{new Date(`${workout.date}T00:00:00`).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</time><div><strong>{workout.title}</strong><span>{workout.purpose}</span></div><div><strong>{workout.plannedMiles ? `${workout.plannedMiles} mi` : workout.duration ?? "—"}</strong><span>{workout.targetRpe}</span></div></article>)}
+          {selectedWeek.workouts.map((workout) => <article key={workout.id}><time dateTime={workout.date}>{displayTrainingDate(workout.date)}</time><div><strong>{workout.title}</strong><span>{workout.purpose}</span></div><div><strong>{workout.plannedMiles ? `${workout.plannedMiles} mi` : workout.duration ?? "—"}</strong><span>{workout.targetRpe}</span></div></article>)}
         </div>
       </section>
 
