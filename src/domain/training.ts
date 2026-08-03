@@ -78,11 +78,14 @@ export interface RecommendationDecision {
 }
 
 export interface TrainingStore {
-  version: 2;
+  version: 3;
   entries: RunEntry[];
   checkIns: WeeklyCheckIn[];
   benchmarks: BenchmarkEntry[];
   decisions: RecommendationDecision[];
   roadmapCompletions: Record<string, boolean>;
   paceGuidance?: { benchmarkId: string; text: string; accepted: boolean };
+  strengthLogs: import("./strength.ts").StrengthSessionLog[];
+  strengthDecisions: import("./strength.ts").StrengthAdjustmentDecision[];
+  selectedAbExercise: "cable-crunch" | "hanging-knee-raise" | "reverse-crunch";
 }

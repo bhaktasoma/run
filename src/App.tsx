@@ -1,6 +1,5 @@
 import { useState } from "react";
 import plans from "./data/plans";
-import workoutPlan from "./data/workoutPlan";
 import PlanPage from "./components/PlanPage";
 import WorkoutPlanPage from "./components/WorkoutPlanPage";
 import GoalPage from "./components/GoalPage";
@@ -86,7 +85,7 @@ function App() {
       ) : page.kind === "goal" ? (
         <GoalPage />
       ) : page.kind === "workout" ? (
-        <WorkoutPlanPage plan={workoutPlan} />
+        <WorkoutPlanPage store={training.store} onSaveLog={training.upsertStrengthLog} onSaveDecision={training.saveStrengthDecision} onSelectAb={training.selectAbExercise} />
       ) : selectedPlan ? (
         <PlanPage plan={selectedPlan} completions={training.store.roadmapCompletions} onCompletionChange={training.setRoadmapCompletion} />
       ) : (

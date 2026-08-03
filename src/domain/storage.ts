@@ -1,14 +1,18 @@
 import type { RunEntry, TrainingStore } from "./training.ts";
 
-export const TRAINING_STORAGE_KEY = "soma-training-store-v2";
+export const TRAINING_STORAGE_KEY = "soma-training-store-v3";
+const PREVIOUS_TRAINING_STORAGE_KEY = "soma-training-store-v2";
 
 export const emptyTrainingStore = (): TrainingStore => ({
-  version: 2,
+  version: 3,
   entries: [],
   checkIns: [],
   benchmarks: [],
   decisions: [],
   roadmapCompletions: {},
+  strengthLogs: [],
+  strengthDecisions: [],
+  selectedAbExercise: "cable-crunch",
 });
 
 interface LegacyRunEntry {
@@ -49,8 +53,10 @@ export function loadTrainingStore(storage: Pick<Storage, "getItem"> = localStora
     const stored = storage.getItem(TRAINING_STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored) as TrainingStore;
-      if (parsed.version === 2) return { ...emptyTrainingStore(), ...parsed };
+      if (parsed.version === 3) return { ...emptyTrainingStore(), ...parsed };
     }
+    const previous = storage.getItem(PREVIOUS_TRAINING_STORAGE_KEY);
+    if (previous) return { ...emptyTrainingStore(), ...(JSON.parse(previous) as Omit<TrainingStore, "version">), version: 3 };
     const legacy = JSON.parse(storage.getItem("run-training-log-v1") ?? "[]") as LegacyRunEntry[];
     return { ...emptyTrainingStore(), entries: legacy.map(migrateEntry) };
   } catch {

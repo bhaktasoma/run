@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { loadTrainingStore, saveTrainingStore } from "../domain/storage.ts";
 import type { BenchmarkEntry, RecommendationDecision, RunEntry, TrainingStore, WeeklyCheckIn } from "../domain/training.ts";
+import type { StrengthAdjustmentDecision, StrengthSessionLog } from "../domain/strength.ts";
 
 export default function useTrainingStore() {
   const [store, setStore] = useState<TrainingStore>(loadTrainingStore);
@@ -24,6 +25,15 @@ export default function useTrainingStore() {
     decisions: [...current.decisions.filter((item) => item.weekId !== decision.weekId), decision],
   }));
   const savePaceGuidance = (benchmarkId: string, text: string, accepted: boolean) => setStore((current) => ({ ...current, paceGuidance: { benchmarkId, text, accepted } }));
+  const upsertStrengthLog = (log: StrengthSessionLog) => setStore((current) => ({
+    ...current,
+    strengthLogs: current.strengthLogs.some((item) => item.id === log.id) ? current.strengthLogs.map((item) => item.id === log.id ? log : item) : [log, ...current.strengthLogs],
+  }));
+  const saveStrengthDecision = (decision: StrengthAdjustmentDecision) => setStore((current) => ({
+    ...current,
+    strengthDecisions: [...current.strengthDecisions.filter((item) => item.weekId !== decision.weekId), decision],
+  }));
+  const selectAbExercise = (selectedAbExercise: TrainingStore["selectedAbExercise"]) => setStore((current) => ({ ...current, selectedAbExercise }));
   const setRoadmapCompletion = (id: string, complete: boolean) => setStore((current) => {
     const roadmapCompletions = { ...current.roadmapCompletions };
     if (complete) roadmapCompletions[id] = true;
@@ -31,5 +41,5 @@ export default function useTrainingStore() {
     return { ...current, roadmapCompletions };
   });
 
-  return { store, upsertEntry, deleteEntry, upsertCheckIn, addBenchmark, saveDecision, savePaceGuidance, setRoadmapCompletion };
+  return { store, upsertEntry, deleteEntry, upsertCheckIn, addBenchmark, saveDecision, savePaceGuidance, upsertStrengthLog, saveStrengthDecision, selectAbExercise, setRoadmapCompletion };
 }

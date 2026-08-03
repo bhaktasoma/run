@@ -39,7 +39,7 @@ test("active plan preserves recovery and strength guardrails", () => {
   assert.deepEqual(activePlan.map((week) => week.plannedMiles), [0, 12, 15, 16, 15, 18, 20, 22]);
   for (const week of activePlan.slice(1)) {
     assert.ok(week.workouts.filter((workout) => workout.kind === "run" || workout.kind === "benchmark").length <= 5);
-    assert.equal(week.workouts.filter((workout) => workout.kind === "strength").length, 2);
+    assert.equal(week.workouts.filter((workout) => workout.title.includes("Full Body")).length, 2);
     const longRun = week.workouts.find((workout) => workout.isLongRun)!;
     const normalStrength = week.workouts.find((workout) => workout.title.includes("normal"))!;
     assert.ok(new Date(longRun.date).getTime() - new Date(normalStrength.date).getTime() >= 3 * 86_400_000);

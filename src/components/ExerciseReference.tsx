@@ -6,9 +6,9 @@ type Pattern = "press" | "pull" | "squat" | "hinge" | "lunge" | "core" | "carry"
 
 const getPattern = (exercise: string): Pattern => {
   const name = exercise.toLowerCase();
-  if (/plank|dead bug|bird dog|mountain|twist|superman|knee raise|wood chop/.test(name)) return "core";
+  if (/plank|dead bug|bird dog|mountain|twist|superman|knee raise|wood chop|crunch|pallof/.test(name)) return "core";
   if (/carry/.test(name)) return "carry";
-  if (/squat|leg press|step-up|calf|bridge|lateral walk/.test(name)) return "squat";
+  if (/squat|leg press|step-up|calf|bridge|hip thrust|lateral walk|abduction/.test(name)) return "squat";
   if (/deadlift|hamstring curl/.test(name)) return "hinge";
   if (/lunge|split squat/.test(name)) return "lunge";
   if (/row|pulldown|pull-up|face pull|curl|reverse fly/.test(name)) return "pull";
