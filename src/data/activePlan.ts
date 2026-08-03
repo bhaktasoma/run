@@ -27,7 +27,7 @@ const blueprints: WeekBlueprint[] = [
   { miles: [3, 3, 2, 4], objective: "Return gently with four conversational runs", longRunPurpose: "Reintroduce easy time on feet." },
   { miles: [3, 4, 3, 5], objective: "Rebuild an easy-running rhythm", longRunPurpose: "Extend only while effort stays easy." },
   { miles: [3, 4, 3, 6], objective: "Add a little endurance without intensity", longRunPurpose: "Practice relaxed pacing and recovery." },
-  { miles: [3, 3, 3, 6], objective: "Consolidate and add relaxed coordination", longRunPurpose: "Hold durability while reducing weekday load.", strides: true },
+  { miles: [3, 3, 2, 5], objective: "Recovery week: absorb training and add relaxed coordination", longRunPurpose: "Reduce load while maintaining comfortable durability.", strides: true },
   { miles: [4, 4, 3, 7], objective: "Resume gradual aerobic development", longRunPurpose: "Build endurance at conversational effort." },
   { miles: [4, 5, 3, 8], objective: "Build consistency before adding workouts", longRunPurpose: "Practice fueling if the run exceeds 75 minutes." },
   { miles: [4, 5, 4, 9], objective: "Check aerobic progress at the same easy effort", longRunPurpose: "Finish controlled, never depleted.", benchmark: true },

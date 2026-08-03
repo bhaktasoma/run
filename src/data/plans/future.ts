@@ -180,7 +180,7 @@ const monthConfigs: MonthConfig[] = [
   {
     id: "2027-07", title: "July Training Plan", phase: "Fall half-marathon foundation",
     easyPace: "12:00–13:00/mi", recoveryPace: "12:45–13:45/mi", longPace: "11:45–12:30/mi", tempoPace: "10:00–10:30/mi", intervalPace: "9:35–10:05/mi", hillPace: "Pace varies by grade",
-    priorities: ["Rebuild consistent mileage", "Use the first half-marathon result to update paces", "Develop hills and tempo gradually", "Prepare for the November 14 Monterey Bay Half Marathon"],
+    priorities: ["Rebuild consistent mileage", "Use the first half-marathon result to update paces", "Develop hills and tempo gradually", "Prepare for the provisional November 2027 Monterey Bay target; confirm when officially announced"],
     weeks: [
       { start: "2027-07-05", focus: "Consistent base", miles: [4, 5, 4, 3, 9], quality: "Easy + 6×20-sec strides", qualityPace: "Easy; strides RPE 7", sunday: "Rest" },
       { start: "2027-07-12", focus: "Hill strength", miles: [5, 6, 4, 3, 10], quality: "Hill Repeats: 7×60 sec", qualityPace: "RPE 7–8 uphill", sunday: "Easy Hike" },
@@ -188,7 +188,7 @@ const monthConfigs: MonthConfig[] = [
       { start: "2027-07-26", focus: "Recovery week", miles: [4, 4, 4, 3, 8], quality: "Easy + 4×20-sec strides", qualityPace: "Easy; strides RPE 7", sunday: "Easy Hike" },
     ],
     benchmark: "Use the first half-marathon result and July RPE data to set realistic fall training paces. Do not assume 10:00/mile automatically.",
-    next: "August begins the dedicated build toward the November 14 Monterey Bay Half Marathon.",
+    next: "August begins the dedicated build toward the provisional November 2027 Monterey Bay target. Confirm when officially announced.",
   },
 ];
 

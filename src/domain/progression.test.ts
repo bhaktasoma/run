@@ -44,7 +44,8 @@ test("active weeks use full-year date identities and exact planned totals", () =
 });
 
 test("active plan preserves recovery and strength guardrails", () => {
-  assert.deepEqual(activePlan.map((week) => week.plannedMiles), [0, 12, 15, 16, 15, 18, 20, 22]);
+  assert.deepEqual(activePlan.map((week) => week.plannedMiles), [0, 12, 15, 16, 13, 18, 20, 22]);
+  assert.ok(activePlan[4].plannedMiles <= activePlan[3].plannedMiles * .85);
   for (const week of activePlan.slice(1)) {
     assert.ok(week.workouts.filter((workout) => workout.kind === "run" || workout.kind === "benchmark").length <= 5);
     assert.equal(week.workouts.filter((workout) => workout.title.includes("Full Body")).length, 2);
@@ -75,6 +76,14 @@ test("future workouts are not counted as missed during an active week", () => {
   assert.equal(recommendation.state, "Hold");
   assert.equal(recommendation.summary, "Continue the current week as planned.");
   assert.ok(recommendation.reasons.includes("Future workouts are not counted as missed."));
+});
+
+test("today remains open and is not described as completed", () => {
+  const week = activePlan[1];
+  const todayRun = week.workouts.find((item) => item.kind === "run")!;
+  const recommendation = recommendWeek(week, [], undefined, todayRun.date);
+  assert.equal(recommendation.state, "Hold");
+  assert.ok(recommendation.reasons.includes("No missed workouts before today. Today’s workout is still open."));
 });
 
 test("plan adjustments follow named recommendation states", () => {

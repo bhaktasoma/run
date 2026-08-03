@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { loadTrainingStore, saveTrainingStore, TRAINING_STORAGE_KEY } from "./storage.ts";
+import { emptyTrainingStore, exportTrainingBackup, loadTrainingStore, previewTrainingBackup, saveTrainingStore, TRAINING_STORAGE_KEY } from "./storage.ts";
 
 test("versioned storage migrates legacy logs and round-trips new data", () => {
   const values = new Map<string, string>();
@@ -58,4 +58,20 @@ test("version four round-trip preserves editable run fields", () => {
   assert.equal(entry.status, "partial");
   assert.equal(entry.result, "too-hard");
   assert.equal(entry.notes, "Stopped early");
+});
+
+test("JSON backup previews and preserves versioned training data", () => {
+  const store = emptyTrainingStore();
+  store.entries.push({ id: "r", activityDate: "2026-08-03", createdAt: "x", updatedAt: "x", workout: "Easy run", status: "completed", plannedDistance: "3", actualDistance: "3", duration: "42:00", averageRpe: "4", finalRpe: "4", pain: "none", result: "appropriate", notes: "", averageHeartRate: "", maximumHeartRate: "", elevationGain: "", averageCadence: "", terrain: "flat", runWalkMethod: "continuous", runWalkPattern: "", conditions: "" });
+  store.roadmapCompletions.old = true;
+  const preview = previewTrainingBackup(exportTrainingBackup(store));
+  assert.equal(preview.counts.runs, 1);
+  assert.equal(preview.store.entries[0].id, "r");
+  assert.deepEqual(preview.store.roadmapCompletions, { old: true });
+});
+
+test("JSON restore rejects malformed and incomplete backups", () => {
+  assert.throws(() => previewTrainingBackup("not json"), /valid JSON/);
+  assert.throws(() => previewTrainingBackup(JSON.stringify({ format: "other", data: {} })), /not a Soma/);
+  assert.throws(() => previewTrainingBackup(JSON.stringify({ format: "soma-running-backup", data: { version: 4 } })), /missing a valid/);
 });

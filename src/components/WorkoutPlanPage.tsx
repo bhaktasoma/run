@@ -27,9 +27,9 @@ export default function WorkoutPlanPage({ store, onSaveLog, onSaveDecision, onSe
   const checkIn = store.checkIns.find((item) => item.weekId === currentWeek.id);
   const runningRecommendation = recommendWeek(currentWeek, runningEntries, checkIn, today);
   let suggestedMode: StrengthRecoveryMode = "normal";
-  if (currentWeek.id === "2026-W31") suggestedMode = "post-race";
+  if (currentWeek.id === "2026-W31" || currentWeek.id === "2026-W32") suggestedMode = "post-race";
   else if (runningRecommendation.state === "Reduce" || runningRecommendation.state === "Reassess" || checkIn?.sleepRecovery === "poor") suggestedMode = "high-fatigue";
-  else if (currentWeek.objective.toLowerCase().includes("consolidate")) suggestedMode = "running-recovery";
+  else if (/recovery|consolidate/i.test(currentWeek.objective)) suggestedMode = "running-recovery";
   const decision = store.strengthDecisions.find((item) => item.weekId === currentWeek.id);
   const effectiveMode = decision?.accepted === false ? "normal" : suggestedMode;
   const adapted = adaptStrengthPlan(strengthSessions, effectiveMode);
@@ -44,11 +44,13 @@ export default function WorkoutPlanPage({ store, onSaveLog, onSaveDecision, onSe
     <header className="strength-hero"><div><h1>Strength</h1><p>Two full-body sessions build durable strength without compromising key runs.</p></div><aside><span>Next strength session</span><strong>{nextSession ? `${nextSession.day} · ${nextSession.title}` : "Recovery first"}</strong><small>{nextSession?.duration ?? "Resume when everyday movement feels comfortable."}</small></aside></header>
 
     <nav className="strength-tabs" role="tablist" aria-label="Strength sections">
-      {([ ["plan", "Plan"], ["week", "This week"], ["log", "Log workouts"], ["progress", "Progress"], ["guides", "Guides"] ] as const).map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={activeTab === id} className={activeTab === id ? "is-active" : ""} onClick={() => setActiveTab(id)}>{label}</button>)}
+      {([ ["plan", "Overview"], ["log", "Train"], ["progress", "Progress"], ["guides", "Guides"] ] as const).map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={activeTab === id} className={activeTab === id ? "is-active" : ""} onClick={() => setActiveTab(id)}>{label}</button>)}
     </nav>
 
     {activeTab === "plan" && <section className="strength-plan-overview strength-tab-panel" id="weekly-strength" role="tabpanel" aria-labelledby="weekly-strength-title">
       <header><div><h2 id="weekly-strength-title">Detailed strength plan</h2><p>Open a day to view exercises, sets, and form guidance.</p></div>{suggestedMode === "post-race" && <small className="strength-plan-overview__status">Recovery week · Reference only</small>}</header>
+      <section className="strength-adjustment"><div><p className="goal-page__eyebrow">This week’s adaptation</p><h3>{adapted.title}</h3><p>{adapted.explanation}</p><small>{adapted.sessions.filter((session) => session.required).length} required sessions · {adapted.sessions.some((session) => !session.required) ? "Optional session available when recovered" : "Optional session suppressed"}</small></div></section>
+      <details className="strength-alternative"><summary>Alternative when Monday strength affects Tuesday quality</summary><p>Move Full Body A to Tuesday after the quality run, separated by several hours when practical. Keep Full Body B on Thursday. Optional work remains recovery-dependent.</p></details>
       <div className="strength-plan-overview__grid">
         {strengthSessions.slice(0, 2).map((session) => <details key={session.id}><summary><span>{session.day}</span><strong>{session.title}</strong><small>{session.duration} · Required</small></summary><ol>{session.exercises.map((exercise) => <li key={exercise.id}><ExerciseReference exercise={exercise.name} label="View" row prescription={`${exercise.sets} × ${exercise.minReps}–${exercise.maxReps}${exercise.repLabel ? ` ${exercise.repLabel}` : ""}`} /></li>)}</ol></details>)}
         <article className="strength-plan-rest"><span>Friday</span><strong>Complete rest</strong><small>Recovery · Protect Saturday’s long run</small></article>

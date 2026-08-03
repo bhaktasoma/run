@@ -34,12 +34,6 @@ export default function useTrainingStore() {
     strengthDecisions: [...current.strengthDecisions.filter((item) => item.weekId !== decision.weekId), decision],
   }));
   const selectAbExercise = (selectedAbExercise: TrainingStore["selectedAbExercise"]) => setStore((current) => ({ ...current, selectedAbExercise }));
-  const setRoadmapCompletion = (id: string, complete: boolean) => setStore((current) => {
-    const roadmapCompletions = { ...current.roadmapCompletions };
-    if (complete) roadmapCompletions[id] = true;
-    else delete roadmapCompletions[id];
-    return { ...current, roadmapCompletions };
-  });
-
-  return { store, upsertEntry, deleteEntry, upsertCheckIn, addBenchmark, saveDecision, savePaceGuidance, upsertStrengthLog, saveStrengthDecision, selectAbExercise, setRoadmapCompletion };
+  const restoreStore = (restored: TrainingStore) => setStore(restored);
+  return { store, upsertEntry, deleteEntry, upsertCheckIn, addBenchmark, saveDecision, savePaceGuidance, upsertStrengthLog, saveStrengthDecision, selectAbExercise, restoreStore };
 }

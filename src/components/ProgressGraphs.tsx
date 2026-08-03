@@ -12,7 +12,8 @@ const pointPosition = (value: number, min: number, max: number) => 88 - ((value 
 
 interface PlotPoint { id: string; date: string; value: number; label: string; tone?: string; marker?: string; }
 function PointPlot({ title, description, points, lineValues, connect = true }: { title: string; description: string; points: PlotPoint[]; lineValues?: Array<number | null>; connect?: boolean }) {
-  if (!points.length) return <div className="chart-empty">No observations in this range.</div>;
+  const minimum = title === "Easy-run pace" ? 3 : title === "Long-run durability" || title === "Benchmark history" ? 2 : 1;
+  if (points.length < minimum) return <div className="chart-empty">Not enough comparable observations in this range.</div>;
   const values = [...points.map((point) => point.value), ...(lineValues ?? []).filter((value): value is number => value !== null)]; const min = Math.min(...values); const max = Math.max(...values);
   const coords = points.map((point, index) => ({ x: points.length === 1 ? 50 : 5 + index / (points.length - 1) * 90, y: pointPosition(point.value, min, max) }));
   connect = connect && title !== "Easy-run pace" && title !== "Benchmark history";

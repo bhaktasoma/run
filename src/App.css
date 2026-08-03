@@ -1240,8 +1240,35 @@
 .progress-status-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 12px 0 24px; }
 .progress-status-grid article { display: grid; gap: 7px; padding: 15px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
 .progress-status-grid strong, .progress-status-grid span { color: var(--text-h); }.progress-status-grid small { color: var(--text); }
+.app__primary-links { display: flex; align-items: center; gap: 4px; }
+.app__more { position: relative; }
+.app__more > summary { list-style: none; cursor: pointer; }
+.app__more > summary::-webkit-details-marker { display: none; }
+.app__more > div { position: absolute; z-index: 20; top: calc(100% + 8px); right: 0; display: grid; min-width: 210px; padding: 6px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); box-shadow: 0 12px 30px rgb(0 0 0 / .12); }
+.app__more > div button { padding: 10px; border: 0; border-radius: 7px; background: transparent; color: var(--text-h); text-align: left; cursor: pointer; }
+.app__more > div button:hover, .app__more > div button.is-active { background: var(--accent-bg); color: var(--accent); }
+.roadmap-month-picker { display: grid; max-width: 320px; gap: 6px; margin-top: 18px; color: var(--text-h); font-weight: 650; }
+.roadmap-month-picker select { padding: 9px 11px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text-h); }
+.backup-card, .past-weeks { margin: 16px 0 22px; padding: 16px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.backup-card > summary, .past-weeks > summary { color: var(--text-h); font-weight: 700; cursor: pointer; }
+.backup-preview { margin-top: 14px; padding: 14px; border-radius: 9px; background: var(--accent-bg); }
+.run-log-form__save:disabled { cursor: not-allowed; opacity: .45; }
+.progress-onboarding, .benchmark-disclosure { margin: 18px 0; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.benchmark-disclosure > summary { color: var(--accent); font-weight: 750; cursor: pointer; }
+.benchmark-disclosure .benchmark-card { margin: 16px 0 0; }
+.chart-card:has(> .chart-empty) { display: none; }
 
 @media (max-width: 600px) {
+  .app__nav { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; overflow: visible; }
+  .app__brand-name, .app__roadmap-link { display: none; }
+  .app__primary-links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); min-width: 0; }
+  .app__primary-links .app__nav-btn { min-width: 0; padding: 8px 4px; font-size: 11px; }
+  .app__more { justify-self: end; }
+  .roadmap-table thead { display: none; }
+  .roadmap-table, .roadmap-table tbody, .roadmap-table tr, .roadmap-table td { display: block; width: 100%; }
+  .roadmap-table tr { margin-bottom: 10px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+  .roadmap-table td { display: grid; grid-template-columns: 92px 1fr; gap: 10px; padding: 5px 0; border: 0; }
+  .roadmap-table td::before { content: attr(data-label); color: var(--text); font-size: 11px; font-weight: 650; text-transform: uppercase; }
   .progress-graphs { grid-template-columns: 1fr; }
   .progress-graphs__controls, .chart-card > header { display: grid; }
   .progress-graphs__controls > div:last-child { flex-wrap: nowrap; width: 100%; overflow-x: auto; }

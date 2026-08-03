@@ -95,10 +95,15 @@ export const sumMileageValues = (values: Array<string | number>) => values.reduc
   return sum + (Number.isFinite(miles) ? miles : 0);
 }, 0);
 
+export type WorkoutDateState = "past" | "today" | "future";
+export const workoutDateState = (workoutDate: string, today: string): WorkoutDateState => workoutDate < today ? "past" : workoutDate === today ? "today" : "future";
+
 export function recommendWeek(week: ActiveWeek, entries: RunEntry[], checkIn?: WeeklyCheckIn, evaluationDate = week.workouts.map((workout) => workout.date).sort().at(-1)!): Recommendation {
   const plannedRuns = week.workouts.filter((workout) => workout.kind === "run" || workout.kind === "benchmark");
-  const dueRuns = plannedRuns.filter((workout) => workout.date <= evaluationDate);
-  const futureRuns = plannedRuns.filter((workout) => workout.date > evaluationDate);
+  const pastRuns = plannedRuns.filter((workout) => workoutDateState(workout.date, evaluationDate) === "past");
+  const todayRuns = plannedRuns.filter((workout) => workoutDateState(workout.date, evaluationDate) === "today");
+  const dueRuns = [...pastRuns, ...todayRuns];
+  const futureRuns = plannedRuns.filter((workout) => workoutDateState(workout.date, evaluationDate) === "future");
   const relevant = entries.filter((entry) => entry.activityDate <= evaluationDate && entry.workoutId && dueRuns.some((workout) => workout.id === entry.workoutId));
   const completed = relevant.filter((entry) => completedStatuses.has(entry.status)).length;
   const completionRate = dueRuns.length ? completed / dueRuns.length : 1;
@@ -114,6 +119,8 @@ export function recommendWeek(week: ActiveWeek, entries: RunEntry[], checkIn?: W
       reasons: [concerningPain ? "A workout recorded concerning pain." : "Pain is affecting normal movement or running form."],
     };
   }
+
+  if (plannedRuns.length === 0) return { state: "Hold", summary: "Complete the recovery week without adding mileage.", reasons: ["This is an intentional zero-mile post-race week; no end-of-week progression decision is required."] };
 
   const reduceReasons: string[] = [];
   if (tooHard.length >= COACHING_THRESHOLDS.multipleHardSessions) reduceReasons.push("Multiple sessions were harder than planned.");
@@ -132,10 +139,12 @@ export function recommendWeek(week: ActiveWeek, entries: RunEntry[], checkIn?: W
   if (completionRate < COACHING_THRESHOLDS.progressCompletionRate && relevant.length > 0) holdReasons.push("Less than 80% of planned running was completed.");
   if (holdReasons.length) return { state: "Hold", summary: `Hold next week near ${week.plannedMiles} miles.`, reasons: holdReasons };
 
-  if (futureRuns.length > 0) return {
+  if (futureRuns.length > 0 || todayRuns.length > 0) return {
     state: "Hold",
     summary: "Continue the current week as planned.",
-    reasons: dueRuns.length ? ["All workouts due through today were completed.", "Future workouts are not counted as missed."] : ["No running workouts are due yet.", "Future workouts are not counted as missed."],
+    reasons: todayRuns.some((workout) => !relevant.some((entry) => entry.workoutId === workout.id))
+      ? ["No missed workouts before today. Today’s workout is still open.", "Future workouts are not counted as missed."]
+      : pastRuns.length ? ["All workouts before today were resolved.", "Future workouts are not counted as missed."] : ["No running workouts are due yet.", "Future workouts are not counted as missed."],
   };
 
   return {

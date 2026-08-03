@@ -38,8 +38,11 @@ test("race week offers one maintenance session without demanding lower body", ()
   assert.ok(adapted.suppressedSessionIds.includes("aesthetic"));
 });
 
-test("post-race recovery suppresses strength", () => {
-  assert.equal(adaptStrengthPlan(strengthSessions, "post-race").sessions.length, 0);
+test("post-race recovery conditionally reduces required strength and suppresses optional work", () => {
+  const adapted = adaptStrengthPlan(strengthSessions, "post-race");
+  assert.equal(adapted.sessions.length, 2);
+  assert.deepEqual(adapted.suppressedSessionIds, ["aesthetic"]);
+  assert.ok(adapted.sessions.flatMap((session) => session.exercises).filter((exercise) => exercise.lowerBody).every((exercise) => exercise.sets <= 2));
 });
 
 test("marathon peak reduces lower-body volume by about one third", () => {

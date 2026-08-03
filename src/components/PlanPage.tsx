@@ -3,11 +3,11 @@ import WeekCard from "./WeekCard";
 
 interface PlanPageProps {
   plan: Plan;
-  completions: Record<string, boolean>;
-  onCompletionChange: (id: string, complete: boolean) => void;
+  plans: Plan[];
+  onSelectPlan: (id: string) => void;
 }
 
-export default function PlanPage({ plan, completions, onCompletionChange }: PlanPageProps) {
+export default function PlanPage({ plan, plans, onSelectPlan }: PlanPageProps) {
   const renderSections = (sections: PlanSection[] = []) =>
     sections.map((section, index) => (
       <section
@@ -46,6 +46,7 @@ export default function PlanPage({ plan, completions, onCompletionChange }: Plan
         <p className="goal-page__eyebrow">Long-Term Roadmap</p>
         <h1 className="plan-page__title">{plan.title}</h1>
         {plan.intro && <p>{plan.intro}</p>}
+        <label className="roadmap-month-picker">Roadmap month<select value={plan.id} onChange={(event) => onSelectPlan(event.target.value)}>{plans.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
       </header>
       <aside className="roadmap-note">The long-term roadmap shows the intended direction through 2028. Only the current rolling eight-week plan is a specific prescription. Future weeks will be adjusted using completed training, recovery, benchmarks, health, and schedule.</aside>
       {plan.priorities && (
@@ -58,7 +59,7 @@ export default function PlanPage({ plan, completions, onCompletionChange }: Plan
       )}
       {renderSections(plan.beforeWeeks)}
       {plan.weeks.map((week) => (
-        <WeekCard key={`${plan.id}-${week.title}`} week={week} planId={plan.id} completions={completions} onCompletionChange={onCompletionChange} />
+        <WeekCard key={`${plan.id}-${week.title}`} week={week} />
       ))}
       {renderSections(plan.afterWeeks)}
     </div>

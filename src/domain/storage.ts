@@ -87,3 +87,22 @@ export function loadTrainingStore(storage: Pick<Storage, "getItem"> = localStora
 export function saveTrainingStore(store: TrainingStore, storage: Pick<Storage, "setItem"> = localStorage) {
   storage.setItem(TRAINING_STORAGE_KEY, JSON.stringify(store));
 }
+
+export interface BackupPreview { store: TrainingStore; counts: { runs: number; checkIns: number; benchmarks: number; strength: number; decisions: number }; }
+
+export const exportTrainingBackup = (store: TrainingStore) => JSON.stringify({ format: "soma-running-backup", exportedAt: new Date().toISOString(), data: store }, null, 2);
+
+export function previewTrainingBackup(text: string): BackupPreview {
+  let parsed: unknown;
+  try { parsed = JSON.parse(text); } catch { throw new Error("This file is not valid JSON."); }
+  if (!parsed || typeof parsed !== "object" || (parsed as { format?: unknown }).format !== "soma-running-backup") throw new Error("This is not a Soma running-plan backup.");
+  const data = (parsed as { data?: unknown }).data;
+  if (!data || typeof data !== "object") throw new Error("The backup does not contain training data.");
+  const candidate = data as Partial<TrainingStore>;
+  for (const key of ["entries", "checkIns", "benchmarks", "decisions", "strengthLogs", "strengthDecisions"] as const) if (!Array.isArray(candidate[key])) throw new Error(`The backup is missing a valid ${key} collection.`);
+  if (!candidate.entries!.every((entry) => entry && typeof entry === "object" && typeof entry.id === "string" && typeof entry.activityDate === "string" && typeof entry.status === "string")) throw new Error("The backup contains an invalid run entry.");
+  if (!candidate.benchmarks!.every((entry) => entry && typeof entry === "object" && typeof entry.id === "string" && typeof entry.date === "string")) throw new Error("The backup contains an invalid benchmark.");
+  if (!candidate.strengthLogs!.every((entry) => entry && typeof entry === "object" && typeof entry.id === "string" && Array.isArray(entry.exercises))) throw new Error("The backup contains an invalid strength log.");
+  const store: TrainingStore = { ...emptyTrainingStore(), ...candidate, version: 4 };
+  return { store, counts: { runs: store.entries.length, checkIns: store.checkIns.length, benchmarks: store.benchmarks.length, strength: store.strengthLogs.length, decisions: store.decisions.length + store.strengthDecisions.length } };
+}

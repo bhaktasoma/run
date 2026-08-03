@@ -3,6 +3,7 @@ import activePlan from "../data/activePlan.ts";
 import { averagePace, parseDurationMinutes } from "../domain/progression.ts";
 import type { ActiveWorkout, CompletionStatus, PainState, RunEntry, RunWalkMethod, Terrain, WorkoutResult } from "../domain/training.ts";
 import { trainingDateIso } from "../utils/trainingDate.ts";
+import { runOutcomeIsSavable } from "../domain/uiConfig.ts";
 
 interface QuickLogFormProps {
   workout?: ActiveWorkout;
@@ -18,16 +19,19 @@ const nowIso = () => new Date().toISOString();
 const makeEntry = (workout?: ActiveWorkout): RunEntry => ({
   id: "", workoutId: workout?.id, activityDate: workout?.date ?? trainingDateIso(), createdAt: "", updatedAt: "",
   workout: workout?.title ?? "Unplanned run", status: "completed", plannedDistance: workout?.plannedMiles ? String(workout.plannedMiles) : "",
-  actualDistance: workout?.plannedMiles ? String(workout.plannedMiles) : "", duration: "", averageRpe: "4", finalRpe: "4", pain: "none", result: "appropriate",
+  actualDistance: "", duration: "", averageRpe: "4", finalRpe: "4", pain: "none", result: "appropriate",
   notes: "", averageHeartRate: "", maximumHeartRate: "", elevationGain: "", averageCadence: "", terrain: "", runWalkMethod: "unspecified", runWalkPattern: "", conditions: "",
 });
 
 export default function QuickLogForm({ workout, initial, entries = [], onSave, onCancel, onEditExisting }: QuickLogFormProps) {
   const [entry, setEntry] = useState<RunEntry>(initial ?? makeEntry(workout));
+  const [outcome, setOutcome] = useState<CompletionStatus | "">(initial?.status ?? "");
+  const [resultChoice, setResultChoice] = useState<WorkoutResult | "">(initial?.result ?? "");
   const [error, setError] = useState("");
   const [duplicate, setDuplicate] = useState<RunEntry>();
   const dateWorkouts = useMemo(() => plannedWorkouts.filter((item) => item.date === entry.activityDate), [entry.activityDate]);
   const pace = averagePace(entry.actualDistance, entry.duration);
+  const canSave = runOutcomeIsSavable(outcome, entry.actualDistance, Boolean(parseDurationMinutes(entry.duration)), resultChoice);
   const update = <K extends keyof RunEntry>(key: K, value: RunEntry[K]) => { setDuplicate(undefined); setError(""); setEntry((current) => ({ ...current, [key]: value })); };
   const selectDate = (activityDate: string) => {
     const match = plannedWorkouts.find((item) => item.date === activityDate);
@@ -40,6 +44,7 @@ export default function QuickLogForm({ workout, initial, entries = [], onSave, o
   };
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
+    if (!outcome) return setError("Select an outcome before saving.");
     const distance = Number(entry.actualDistance);
     if (!entry.activityDate || entry.activityDate > trainingDateIso()) return setError("Workout date cannot be in the future.");
     if (!Number.isFinite(distance) || distance < 0) return setError("Distance must be a valid nonnegative number.");
@@ -51,20 +56,20 @@ export default function QuickLogForm({ workout, initial, entries = [], onSave, o
     const existing = entries.find((item) => item.id !== entry.id && item.activityDate === entry.activityDate && item.workoutId === entry.workoutId);
     if (existing) { setDuplicate(existing); return setError("A run is already logged for this workout and date."); }
     const timestamp = nowIso();
-    onSave({ ...entry, id: entry.id || `run-${entry.activityDate}-${crypto.randomUUID()}`, createdAt: entry.createdAt || timestamp, updatedAt: timestamp });
+    onSave({ ...entry, status: outcome, result: resultChoice || "appropriate", actualDistance: outcome === "skipped" ? "" : entry.actualDistance, duration: outcome === "skipped" ? "" : entry.duration, id: entry.id || `run-${entry.activityDate}-${crypto.randomUUID()}`, createdAt: entry.createdAt || timestamp, updatedAt: timestamp });
   };
 
   return <form className="quick-log" onSubmit={submit}>
     <div className="quick-log__grid quick-log__grid--primary">
       <label>Workout date<input type="date" required max={trainingDateIso()} value={entry.activityDate} onChange={(event) => selectDate(event.target.value)} /></label>
       <label>Planned workout<select value={entry.workoutId ?? ""} onChange={(event) => selectWorkout(event.target.value)}><option value="">Unplanned run</option>{dateWorkouts.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
-      <label>Status<select value={entry.status} onChange={(event) => update("status", event.target.value as CompletionStatus)}><option value="completed">Completed</option><option value="partial">Partially completed</option><option value="skipped">Skipped</option><option value="substituted">Substituted</option></select></label>
+      <label>Status<select required value={outcome} onChange={(event) => { const value = event.target.value as CompletionStatus | ""; setOutcome(value); if (value) update("status", value); }}><option value="">Select outcome</option><option value="completed">Completed</option><option value="partial">Partially completed</option><option value="skipped">Skipped</option><option value="substituted">Substituted</option></select></label>
       <label>Actual miles<input type="number" min="0" step="0.01" inputMode="decimal" value={entry.actualDistance} onChange={(event) => update("actualDistance", event.target.value)} /></label>
       <label>Duration<input inputMode="numeric" placeholder="42:00 or 1:05:30" value={entry.duration} onChange={(event) => update("duration", event.target.value)} /></label>
       <label>Session RPE<select value={entry.averageRpe} onChange={(event) => update("averageRpe", event.target.value)}>{[1,2,3,4,5,6,7,8,9,10].map((value) => <option key={value}>{value}</option>)}</select></label>
       <label>Final-mile RPE<select value={entry.finalRpe} onChange={(event) => update("finalRpe", event.target.value)}>{[1,2,3,4,5,6,7,8,9,10].map((value) => <option key={value}>{value}</option>)}</select></label>
       <label>Pain<select value={entry.pain} onChange={(event) => update("pain", event.target.value as PainState)}><option value="none">None</option><option value="mild">Mild</option><option value="concerning">Concerning</option></select></label>
-      <label>Result<select value={entry.result} onChange={(event) => update("result", event.target.value as WorkoutResult)}><option value="easier">Easier than expected</option><option value="appropriate">Appropriate</option><option value="too-hard">Too hard</option></select></label>
+      {outcome !== "skipped" && <label>Result<select required value={resultChoice} onChange={(event) => { const value = event.target.value as WorkoutResult | ""; setResultChoice(value); if (value) update("result", value); }}><option value="">Select result</option><option value="easier">Easier than expected</option><option value="appropriate">Appropriate</option><option value="too-hard">Too hard</option></select></label>}
     </div>
     <p className="quick-log__pace"><span>Calculated average pace</span><strong>{pace ?? "—"}</strong></p>
     <details className="quick-log__optional"><summary>Watch and route details</summary><div className="quick-log__grid quick-log__grid--optional">
@@ -80,6 +85,6 @@ export default function QuickLogForm({ workout, initial, entries = [], onSave, o
     </div></details>
     {error && <p className="run-log-form__error" role="alert">{error}</p>}
     {duplicate && onEditExisting && <button className="run-log-form__cancel" type="button" onClick={() => onEditExisting(duplicate)}>Edit existing entry</button>}
-    <div className="run-log-form__actions"><button className="run-log-form__save" type="submit">{initial ? "Update" : "Save completion"}</button>{onCancel && <button className="run-log-form__cancel" type="button" onClick={onCancel}>Cancel</button>}</div>
+    <div className="run-log-form__actions"><button className="run-log-form__save" type="submit" disabled={!canSave}>{initial ? "Update" : "Save completion"}</button>{onCancel && <button className="run-log-form__cancel" type="button" onClick={onCancel}>Cancel</button>}</div>
   </form>;
 }

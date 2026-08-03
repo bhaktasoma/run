@@ -92,7 +92,7 @@ const withSets = (session: StrengthSession, setsFor: (exercise: StrengthExercise
 });
 
 export function adaptStrengthPlan(sessions: StrengthSession[], mode: StrengthRecoveryMode): AdaptedStrengthPlan {
-  if (mode === "post-race") return { mode, title: "Post-race recovery", explanation: "Heavy strength is suppressed until normal walking and daily movement are comfortable. Resume progressively rather than making up missed lifting.", sessions: [], suppressedSessionIds: sessions.map((session) => session.id) };
+  if (mode === "post-race") return { mode, title: "Post-race return to strength", explanation: "Use reduced Full Body A and B only when walking and normal movement feel comfortable. Remove one lower-body set, keep 2–3 repetitions in reserve, and choose conservative—not challenging—starting weights. Optional aesthetic work is temporarily suppressed.", sessions: sessions.filter((session) => session.required).map((session) => withSets(session, (exercise) => exercise.sets - (exercise.lowerBody ? 1 : 0))), suppressedSessionIds: ["aesthetic"] };
   if (mode === "race-week") {
     const base = sessions.find((session) => session.id === "full-body-a")!;
     const maintenance = { ...base, title: "Short race-week maintenance", day: "Monday or Tuesday", duration: "20–25 min", exercises: base.exercises.filter((exercise) => !exercise.lowerBody).map((exercise) => ({ ...exercise, sets: Math.min(2, exercise.sets) })) };
