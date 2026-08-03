@@ -95,12 +95,14 @@ export const sumMileageValues = (values: Array<string | number>) => values.reduc
   return sum + (Number.isFinite(miles) ? miles : 0);
 }, 0);
 
-export function recommendWeek(week: ActiveWeek, entries: RunEntry[], checkIn?: WeeklyCheckIn): Recommendation {
+export function recommendWeek(week: ActiveWeek, entries: RunEntry[], checkIn?: WeeklyCheckIn, evaluationDate = week.workouts.map((workout) => workout.date).sort().at(-1)!): Recommendation {
   const plannedRuns = week.workouts.filter((workout) => workout.kind === "run" || workout.kind === "benchmark");
-  const relevant = entries.filter((entry) => entry.workoutId && plannedRuns.some((workout) => workout.id === entry.workoutId));
+  const dueRuns = plannedRuns.filter((workout) => workout.date <= evaluationDate);
+  const futureRuns = plannedRuns.filter((workout) => workout.date > evaluationDate);
+  const relevant = entries.filter((entry) => entry.activityDate <= evaluationDate && entry.workoutId && dueRuns.some((workout) => workout.id === entry.workoutId));
   const completed = relevant.filter((entry) => completedStatuses.has(entry.status)).length;
-  const completionRate = plannedRuns.length ? completed / plannedRuns.length : 1;
-  const observed = entries.filter((entry) => completedStatuses.has(entry.status));
+  const completionRate = dueRuns.length ? completed / dueRuns.length : 1;
+  const observed = entries.filter((entry) => entry.activityDate <= evaluationDate && completedStatuses.has(entry.status));
   const tooHard = observed.filter((entry) => entry.result === "too-hard" || Number(entry.averageRpe) >= COACHING_THRESHOLDS.excessiveRpe || Number(entry.finalRpe) >= 8);
   const concerningPain = observed.some((entry) => entry.pain === "concerning");
   const mildPain = observed.some((entry) => entry.pain === "mild");
@@ -121,7 +123,7 @@ export function recommendWeek(week: ActiveWeek, entries: RunEntry[], checkIn?: W
   if (reduceReasons.length) return { state: "Reduce", summary: `Reduce next week below ${week.plannedMiles} miles.`, reasons: reduceReasons };
 
   const holdReasons: string[] = [];
-  if (!checkIn) holdReasons.push("Complete the weekly check-in before progressing.");
+  if (!checkIn && futureRuns.length === 0) holdReasons.push("Complete the weekly check-in before progressing.");
   if (tooHard.length === 1) holdReasons.push("One session was harder than planned.");
   if (mildPain) holdReasons.push("Mild pain was recorded.");
   if (checkIn?.sleepRecovery === "mixed") holdReasons.push("Sleep and recovery were mixed.");
@@ -129,6 +131,12 @@ export function recommendWeek(week: ActiveWeek, entries: RunEntry[], checkIn?: W
   if (observed.some((entry) => entry.workout.toLowerCase().includes("long") && Number(entry.finalRpe) >= 7)) holdReasons.push("The long run finished at a high effort.");
   if (completionRate < COACHING_THRESHOLDS.progressCompletionRate && relevant.length > 0) holdReasons.push("Less than 80% of planned running was completed.");
   if (holdReasons.length) return { state: "Hold", summary: `Hold next week near ${week.plannedMiles} miles.`, reasons: holdReasons };
+
+  if (futureRuns.length > 0) return {
+    state: "Hold",
+    summary: "Continue the current week as planned.",
+    reasons: dueRuns.length ? ["All workouts due through today were completed.", "Future workouts are not counted as missed."] : ["No running workouts are due yet.", "Future workouts are not counted as missed."],
+  };
 
   return {
     state: "Progress",

@@ -10,7 +10,7 @@ export default function ProgressPage({ store, onAddBenchmark, onSavePaceGuidance
   const [benchmark, setBenchmark] = useState<Omit<BenchmarkEntry, "id">>({ date: trainingDateIso(), type: "Same easy route", distance: "", duration: "", averageRpe: "4", notes: "" });
   const currentWeek = activePlan.find((week) => week.workouts.some((workout) => workout.date >= trainingDateIso())) ?? activePlan.at(-1)!;
   const currentEntries = entriesForWeek(currentWeek, store.entries);
-  const recommendation = recommendWeek(currentWeek, currentEntries, store.checkIns.find((item) => item.weekId === currentWeek.id));
+  const recommendation = recommendWeek(currentWeek, currentEntries, store.checkIns.find((item) => item.weekId === currentWeek.id), trainingDateIso());
   const easyEntries = [...store.entries].filter((entry) => /easy|recovery/i.test(entry.workout) && !/long|benchmark/i.test(entry.workout) && Number(entry.averageRpe) <= 4 && Number(entry.actualDistance) > 0).sort((a,b) => b.activityDate.localeCompare(a.activityDate));
   const painFlags = store.entries.filter((entry) => entry.pain !== "none");
   const comparablePaces = easyEntries.map((entry) => averagePace(entry.actualDistance, entry.duration)).filter(Boolean);

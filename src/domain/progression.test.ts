@@ -68,6 +68,15 @@ test("progression decisions are deterministic", () => {
   assert.equal(recommendWeek(week, [{ ...runs[0], pain: "concerning" }], goodCheckIn(week.id)).state, "Reassess");
 });
 
+test("future workouts are not counted as missed during an active week", () => {
+  const week = activePlan[1];
+  const firstRun = week.workouts.find((item) => item.kind === "run")!;
+  const recommendation = recommendWeek(week, [entryFor(firstRun.id)], undefined, firstRun.date);
+  assert.equal(recommendation.state, "Hold");
+  assert.equal(recommendation.summary, "Continue the current week as planned.");
+  assert.ok(recommendation.reasons.includes("Future workouts are not counted as missed."));
+});
+
 test("plan adjustments follow named recommendation states", () => {
   assert.equal(adjustedMileage(20, "Progress"), 22);
   assert.equal(adjustedMileage(20, "Hold"), 20);

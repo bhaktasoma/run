@@ -25,7 +25,7 @@ export default function WorkoutPlanPage({ store, onSaveLog, onSaveDecision, onSe
   const currentWeek = activePlan.find((week) => week.workouts.some((workout) => workout.date === today)) ?? activePlan.find((week) => week.workouts.some((workout) => workout.date > today)) ?? activePlan.at(-1)!;
   const runningEntries = entriesForWeek(currentWeek, store.entries);
   const checkIn = store.checkIns.find((item) => item.weekId === currentWeek.id);
-  const runningRecommendation = recommendWeek(currentWeek, runningEntries, checkIn);
+  const runningRecommendation = recommendWeek(currentWeek, runningEntries, checkIn, today);
   let suggestedMode: StrengthRecoveryMode = "normal";
   if (currentWeek.id === "2026-W31") suggestedMode = "post-race";
   else if (runningRecommendation.state === "Reduce" || runningRecommendation.state === "Reassess" || checkIn?.sleepRecovery === "poor") suggestedMode = "high-fatigue";

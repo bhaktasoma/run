@@ -2,7 +2,7 @@ import { useState } from "react";
 import activePlan from "../data/activePlan.ts";
 import { completedMileage, entriesForWeek, recommendWeek } from "../domain/progression.ts";
 import type { RecommendationDecision, TrainingStore, WeeklyCheckIn } from "../domain/training.ts";
-import { displayTrainingDate } from "../utils/trainingDate.ts";
+import { displayTrainingDate, trainingDateIso } from "../utils/trainingDate.ts";
 
 interface CurrentPlanPageProps {
   store: TrainingStore;
@@ -16,7 +16,7 @@ export default function CurrentPlanPage({ store, onSaveCheckIn, onSaveDecision }
   const selectedWeek = activePlan.find((week) => week.id === openWeekId)!;
   const entries = entriesForWeek(selectedWeek, store.entries);
   const savedCheckIn = store.checkIns.find((item) => item.weekId === selectedWeek.id);
-  const recommendation = recommendWeek(selectedWeek, entries, savedCheckIn);
+  const recommendation = recommendWeek(selectedWeek, entries, savedCheckIn, trainingDateIso());
   const savedDecision = store.decisions.find((item) => item.weekId === selectedWeek.id);
 
   const selectWeek = (weekId: string) => {

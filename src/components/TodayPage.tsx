@@ -22,7 +22,7 @@ export default function TodayPage({ store, onSaveEntry }: TodayPageProps) {
     ?? currentWeek.workouts[0];
   const weekEntries = entriesForWeek(currentWeek, store.entries);
   const checkIn = store.checkIns.find((item) => item.weekId === currentWeek.id);
-  const recommendation = recommendWeek(currentWeek, weekEntries, checkIn);
+  const recommendation = recommendWeek(currentWeek, weekEntries, checkIn, today);
   const nextLongRun = activePlan.flatMap((week) => week.workouts).find((workout) => workout.isLongRun && workout.date >= today);
   const countdown = daysBetweenIsoDates(today, "2027-11-14");
   const existing = store.entries.find((entry) => entry.workoutId === todayWorkout.id);
