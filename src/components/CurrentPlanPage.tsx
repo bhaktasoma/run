@@ -1,6 +1,6 @@
 import { useState } from "react";
 import activePlan from "../data/activePlan.ts";
-import { completedMileage, recommendWeek } from "../domain/progression.ts";
+import { completedMileage, entriesForWeek, recommendWeek } from "../domain/progression.ts";
 import type { RecommendationDecision, TrainingStore, WeeklyCheckIn } from "../domain/training.ts";
 import { displayTrainingDate } from "../utils/trainingDate.ts";
 
@@ -14,7 +14,7 @@ export default function CurrentPlanPage({ store, onSaveCheckIn, onSaveDecision }
   const [openWeekId, setOpenWeekId] = useState(activePlan[0].id);
   const [checkIn, setCheckIn] = useState<WeeklyCheckIn>({ weekId: activePlan[0].id, sleepRecovery: "good", painAffectsMovement: false, confidence: "unchanged", longRunRecovery: "not-applicable" });
   const selectedWeek = activePlan.find((week) => week.id === openWeekId)!;
-  const entries = store.entries.filter((entry) => selectedWeek.workouts.some((workout) => workout.id === entry.workoutId));
+  const entries = entriesForWeek(selectedWeek, store.entries);
   const savedCheckIn = store.checkIns.find((item) => item.weekId === selectedWeek.id);
   const recommendation = recommendWeek(selectedWeek, entries, savedCheckIn);
   const savedDecision = store.decisions.find((item) => item.weekId === selectedWeek.id);
@@ -29,7 +29,7 @@ export default function CurrentPlanPage({ store, onSaveCheckIn, onSaveDecision }
       <header className="section-hero"><p className="goal-page__eyebrow">Specific prescription</p><h1>Current 8-Week Plan</h1><p>Weeks 1–2 are prescribed. Weeks 3–8 remain adjustable using completed training, recovery, benchmarks, health, and schedule.</p></header>
       <div className="eight-week-strip" aria-label="Eight-week plan">
         {activePlan.map((week) => {
-          const weekEntries = store.entries.filter((entry) => week.workouts.some((workout) => workout.id === entry.workoutId));
+          const weekEntries = entriesForWeek(week, store.entries);
           return <button className={week.id === openWeekId ? "week-selector is-active" : "week-selector"} type="button" key={week.id} onClick={() => selectWeek(week.id)}><span>Week {activePlan.indexOf(week) + 1}</span><strong>{week.plannedMiles} mi</strong><small>{completedMileage(weekEntries).toFixed(1)} done · {week.status}</small></button>;
         })}
       </div>

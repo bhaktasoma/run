@@ -2,13 +2,15 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import activePlan from "../data/activePlan.ts";
 import plans from "../data/plans/index.ts";
-import { adjustedMileage, benchmarkGuidance, recommendWeek, sumMileageValues, totalScheduledMileage } from "./progression.ts";
+import { adjustedMileage, averagePace, benchmarkGuidance, easyRunInsight, parseDurationMinutes, recommendWeek, sessionLoad, sumMileageValues, totalScheduledMileage, watchContextInsight, weeklyVolumeSummary } from "./progression.ts";
 import type { RunEntry, WeeklyCheckIn } from "./training.ts";
 
 const entryFor = (workoutId: string, overrides: Partial<RunEntry> = {}): RunEntry => ({
   id: `log-${workoutId}`,
   workoutId,
-  date: workoutId,
+  activityDate: workoutId,
+  createdAt: `${workoutId}T12:00:00.000Z`,
+  updatedAt: `${workoutId}T12:00:00.000Z`,
   workout: "Easy run",
   status: "completed",
   plannedDistance: "3",
@@ -19,8 +21,14 @@ const entryFor = (workoutId: string, overrides: Partial<RunEntry> = {}): RunEntr
   pain: "none",
   result: "appropriate",
   notes: "",
-  fueling: "",
-  weatherTerrain: "",
+  averageHeartRate: "",
+  maximumHeartRate: "",
+  elevationGain: "",
+  averageCadence: "",
+  terrain: "flat",
+  runWalkMethod: "continuous",
+  runWalkPattern: "",
+  conditions: "",
   ...overrides,
 });
 
@@ -71,4 +79,27 @@ test("benchmark guidance remains effort-qualified", () => {
   const guidance = benchmarkGuidance({ id: "b1", date: "2026-09-16", type: "Same easy route", distance: "3", duration: "0:42:00", averageRpe: "4", notes: "" });
   assert.match(guidance, /14:00\/mi/);
   assert.match(guidance, /RPE remains 3–4/);
+});
+
+test("duration, pace, load, and weekly summaries remain understandable", () => {
+  assert.equal(parseDurationMinutes("42:00"), 42);
+  assert.equal(parseDurationMinutes("1:05:30"), 65.5);
+  assert.equal(averagePace("3", "42:00"), "14:00/mi");
+  const week = activePlan[1];
+  const entry = entryFor(week.workouts.find((item) => item.kind === "run")!.id);
+  assert.equal(sessionLoad(entry), 168);
+  const summary = weeklyVolumeSummary(week, [entry]);
+  assert.equal(summary.completedDistance, 3);
+  assert.equal(summary.completedSessions, 1);
+});
+
+test("efficiency and watch context require several comparable runs", () => {
+  const entries = [
+    entryFor("2026-08-20", { activityDate: "2026-08-20", duration: "40:00", averageHeartRate: "140", averageCadence: "164" }),
+    entryFor("2026-08-13", { activityDate: "2026-08-13", duration: "41:00", averageHeartRate: "146", averageCadence: "163" }),
+    entryFor("2026-08-06", { activityDate: "2026-08-06", duration: "41:30", averageHeartRate: "147", averageCadence: "162" }),
+  ];
+  assert.match(easyRunInsight(entries), /becoming faster/);
+  assert.match(watchContextInsight(entries).heartRate, /140 bpm/);
+  assert.match(watchContextInsight(entries.slice(0, 2)).cadence, /more similar/);
 });

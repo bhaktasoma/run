@@ -2,6 +2,8 @@ export type RecommendationState = "Progress" | "Hold" | "Reduce" | "Reassess";
 export type CompletionStatus = "completed" | "partial" | "skipped" | "substituted";
 export type PainState = "none" | "mild" | "concerning";
 export type WorkoutResult = "easier" | "appropriate" | "too-hard";
+export type Terrain = "flat" | "rolling" | "hilly" | "trail" | "treadmill" | "";
+export type RunWalkMethod = "continuous" | "structured" | "unstructured" | "unspecified";
 export type ReadinessState = "Building" | "On Track" | "Needs Attention" | "Not Yet Tested" | "Supported";
 
 export interface ActiveWorkout {
@@ -31,7 +33,9 @@ export interface ActiveWeek {
 export interface RunEntry {
   id: string;
   workoutId?: string;
-  date: string;
+  activityDate: string;
+  createdAt: string;
+  updatedAt: string;
   workout: string;
   status: CompletionStatus;
   plannedDistance: string;
@@ -42,8 +46,14 @@ export interface RunEntry {
   pain: PainState;
   result: WorkoutResult;
   notes: string;
-  fueling: string;
-  weatherTerrain: string;
+  averageHeartRate: string;
+  maximumHeartRate: string;
+  elevationGain: string;
+  averageCadence: string;
+  terrain: Terrain;
+  runWalkMethod: RunWalkMethod;
+  runWalkPattern: string;
+  conditions: string;
 }
 
 export interface WeeklyCheckIn {
@@ -78,7 +88,7 @@ export interface RecommendationDecision {
 }
 
 export interface TrainingStore {
-  version: 3;
+  version: 4;
   entries: RunEntry[];
   checkIns: WeeklyCheckIn[];
   benchmarks: BenchmarkEntry[];

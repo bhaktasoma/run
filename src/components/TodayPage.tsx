@@ -1,5 +1,6 @@
+import { useState } from "react";
 import activePlan from "../data/activePlan.ts";
-import { completedMileage, recommendWeek } from "../domain/progression.ts";
+import { completedMileage, entriesForWeek, recommendWeek } from "../domain/progression.ts";
 import type { RunEntry, TrainingStore } from "../domain/training.ts";
 import QuickLogForm from "./QuickLogForm.tsx";
 import { daysBetweenIsoDates, trainingDateIso } from "../utils/trainingDate.ts";
@@ -10,6 +11,8 @@ interface TodayPageProps {
 }
 
 export default function TodayPage({ store, onSaveEntry }: TodayPageProps) {
+  const [showPastRun, setShowPastRun] = useState(false);
+  const [pastEntry, setPastEntry] = useState<RunEntry>();
   const today = trainingDateIso();
   const currentWeek = activePlan.find((week) => week.workouts.some((workout) => workout.date === today))
     ?? activePlan.find((week) => week.workouts.some((workout) => workout.date > today))
@@ -17,7 +20,7 @@ export default function TodayPage({ store, onSaveEntry }: TodayPageProps) {
   const todayWorkout = currentWeek.workouts.find((workout) => workout.date === today)
     ?? currentWeek.workouts.find((workout) => workout.date >= today)
     ?? currentWeek.workouts[0];
-  const weekEntries = store.entries.filter((entry) => currentWeek.workouts.some((workout) => workout.id === entry.workoutId));
+  const weekEntries = entriesForWeek(currentWeek, store.entries);
   const checkIn = store.checkIns.find((item) => item.weekId === currentWeek.id);
   const recommendation = recommendWeek(currentWeek, weekEntries, checkIn);
   const nextLongRun = activePlan.flatMap((week) => week.workouts).find((workout) => workout.isLongRun && workout.date >= today);
@@ -52,10 +55,10 @@ export default function TodayPage({ store, onSaveEntry }: TodayPageProps) {
       </section>
 
       <section className="today-log-section">
-        <h2>{existing ? "Update today’s completion" : "Log today’s workout"}</h2>
-        <p>The required fields are kept short; optional context stays collapsed.</p>
-        <QuickLogForm key={existing?.id ?? todayWorkout.id} workout={todayWorkout} initial={existing} onSave={onSaveEntry} />
+        <div className="today-log-section__heading"><div><h2>{existing ? "Update today’s completion" : "Log today’s workout"}</h2><p>The required fields are kept short; watch and route context stays collapsed.</p></div><button className="app__nav-btn" type="button" onClick={() => { setShowPastRun((value) => !value); setPastEntry(undefined); }}>Log a past run</button></div>
+        <QuickLogForm key={existing?.id ?? todayWorkout.id} workout={todayWorkout} initial={existing} entries={store.entries} onSave={onSaveEntry} onEditExisting={setPastEntry} />
       </section>
+      {(showPastRun || pastEntry) && <section className="today-log-section"><h2>{pastEntry ? "Edit existing run" : "Log a past run"}</h2><QuickLogForm key={pastEntry?.id ?? "past-run"} initial={pastEntry} entries={store.entries} onSave={(entry) => { onSaveEntry(entry); setShowPastRun(false); setPastEntry(undefined); }} onEditExisting={setPastEntry} onCancel={() => { setShowPastRun(false); setPastEntry(undefined); }} /></section>}
     </main>
   );
 }

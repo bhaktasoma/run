@@ -1,7 +1,7 @@
 import { useState } from "react";
 import activePlan from "../data/activePlan.ts";
 import { abdominalExercises, strengthSessions, warmupGuides } from "../data/workoutPlan.ts";
-import { recommendWeek } from "../domain/progression.ts";
+import { entriesForWeek, recommendWeek } from "../domain/progression.ts";
 import { adaptStrengthPlan, strengthSessionRecommendation } from "../domain/strength.ts";
 import type { StrengthAdjustmentDecision, StrengthRecoveryMode, StrengthSessionLog } from "../domain/strength.ts";
 import type { TrainingStore } from "../domain/training.ts";
@@ -23,7 +23,7 @@ export default function WorkoutPlanPage({ store, onSaveLog, onSaveDecision, onSe
   const today = trainingDateIso();
   const todayDate = new Date(`${today}T12:00:00Z`);
   const currentWeek = activePlan.find((week) => week.workouts.some((workout) => workout.date === today)) ?? activePlan.find((week) => week.workouts.some((workout) => workout.date > today)) ?? activePlan.at(-1)!;
-  const runningEntries = store.entries.filter((entry) => currentWeek.workouts.some((workout) => workout.id === entry.workoutId));
+  const runningEntries = entriesForWeek(currentWeek, store.entries);
   const checkIn = store.checkIns.find((item) => item.weekId === currentWeek.id);
   const runningRecommendation = recommendWeek(currentWeek, runningEntries, checkIn);
   let suggestedMode: StrengthRecoveryMode = "normal";
