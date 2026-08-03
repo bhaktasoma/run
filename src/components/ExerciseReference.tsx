@@ -1,5 +1,8 @@
 interface ExerciseReferenceProps {
   exercise: string;
+  label?: string;
+  prescription?: string;
+  row?: boolean;
 }
 
 type Pattern = "press" | "pull" | "squat" | "hinge" | "lunge" | "core" | "carry" | "mobility";
@@ -27,27 +30,48 @@ const cues: Record<Pattern, string[]> = {
   mobility: ["Move slowly into a comfortable range.", "Keep breathing instead of forcing the position.", "Stop before sharp pain or pinching."],
 };
 
-export default function ExerciseReference({ exercise }: ExerciseReferenceProps) {
+export default function ExerciseReference({ exercise, label, prescription, row = false }: ExerciseReferenceProps) {
   const pattern = getPattern(exercise);
   const searchName = exercise.replace(/\s*\(.*\)$/, "");
   const videoUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${searchName} proper form tutorial`)}`;
 
+  const referenceContent = <>
+    <div className="exercise-reference__content">
+      <div>
+        <strong>{exercise}</strong>
+        <ul>
+          {cues[pattern].map((cue) => <li key={cue}>{cue}</li>)}
+        </ul>
+        <a className="exercise-reference__video" href={videoUrl} target="_blank" rel="noreferrer">
+          <span aria-hidden="true">▶</span>
+          Watch demonstration
+        </a>
+      </div>
+    </div>
+    <p className="exercise-reference__note">Video results open on YouTube. Prefer demonstrations from qualified coaches or physical therapists.</p>
+  </>;
+
+  if (row) return (
+    <details className="exercise-reference exercise-reference--row">
+      <summary title={`View form tips and video for ${exercise}`}>
+        <strong>{exercise}</strong>
+        <span>{prescription}</span>
+        <b>{label ?? "View"}</b>
+      </summary>
+      {referenceContent}
+    </details>
+  );
+
   return (
     <details className="exercise-reference">
-      <summary>Form &amp; video</summary>
-      <div className="exercise-reference__content">
-        <div>
-          <strong>{exercise}</strong>
-          <ul>
-            {cues[pattern].map((cue) => <li key={cue}>{cue}</li>)}
-          </ul>
-          <a className="exercise-reference__video" href={videoUrl} target="_blank" rel="noreferrer">
-            <span aria-hidden="true">▶</span>
-            Watch demonstration
-          </a>
-        </div>
-      </div>
-      <p className="exercise-reference__note">Video results open on YouTube. Prefer demonstrations from qualified coaches or physical therapists.</p>
+      <summary className={label ? "exercise-reference__trigger--text" : undefined} title={`View form tips and video for ${exercise}`}>
+        {label ? <span>{label}</span> : <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+          <path d="M2.2 12s3.6-6 9.8-6 9.8 6 9.8 6-3.6 6-9.8 6-9.8-6-9.8-6Z" />
+          <circle cx="12" cy="12" r="2.8" />
+        </svg>}
+        <span className="sr-only">{label ? " form tips and video for " : "View form tips and video for "}{exercise}</span>
+      </summary>
+      {referenceContent}
     </details>
   );
 }
