@@ -29,12 +29,15 @@ interface MonthConfig {
 
 const formatDate = (date: Date) => date.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 
+const benchmarkPace = (pace: string, rpe: string) =>
+  `${rpe}; ${pace} only if recent benchmark and recovery support it`;
+
 const getQualityPace = (config: WeekConfig, month: MonthConfig) => {
   const workout = config.quality.toLowerCase();
-  if (workout.includes("hill")) return `${month.hillPace}; ${config.qualityPace}`;
-  if (workout.includes("stride")) return `${month.easyPace} easy; strides ${month.intervalPace}`;
-  if (workout.includes("interval") || workout.includes("800m") || workout.includes("fartlek")) return `${month.intervalPace}; ${config.qualityPace}`;
-  return `${month.tempoPace}; ${config.qualityPace}`;
+  if (workout.includes("hill")) return `${config.qualityPace}; ${month.hillPace}`;
+  if (workout.includes("stride")) return `Easy RPE 3–4; strides RPE 7; ignore pace unless benchmark-supported`;
+  if (workout.includes("interval") || workout.includes("800m") || workout.includes("fartlek")) return benchmarkPace(month.intervalPace, config.qualityPace);
+  return benchmarkPace(month.tempoPace, config.qualityPace);
 };
 
 const makeWeek = (config: WeekConfig, index: number, month: MonthConfig): Week => {
@@ -48,12 +51,12 @@ const makeWeek = (config: WeekConfig, index: number, month: MonthConfig): Week =
   const weeklyMileage = monday + qualityMiles + wednesday + thursday + longRun;
   const sunday = config.sunday ?? "Rest";
   const days: DayEntry[] = [
-    { day: "Monday", date: dates[0], run: "Easy Run", miles: String(monday), pace: `${month.easyPace}; RPE 3–4`, strength: "Heavy Upper", core: "Core A", mobility: "10 min" },
-    { day: "Tuesday", date: dates[1], run: config.quality, miles: String(qualityMiles), pace: getQualityPace(config, month), strength: "Light Legs", core: "Core B", mobility: "10 min" },
-    { day: "Wednesday", date: dates[2], run: "Easy Run", miles: String(wednesday), pace: `${month.easyPace}; RPE 3–4`, strength: "Upper Moderate", core: DASH, mobility: "10 min" },
-    { day: "Thursday", date: dates[3], run: "Recovery Run", miles: String(thursday), pace: `${month.recoveryPace}; RPE 2–3`, strength: DASH, core: "Core C", mobility: "15 min" },
-    { day: "Friday", date: dates[4], run: "Rest", miles: DASH, pace: "No pace — rest", strength: "Heavy Legs", core: "Core D", mobility: "15 min" },
-    { day: "Saturday", date: dates[5], run: "Long Run", miles: String(longRun), pace: `${month.longPace}; RPE 4`, strength: DASH, core: DASH, mobility: "10 min" },
+    { day: "Monday", date: dates[0], run: "Easy Run", miles: String(monday), pace: benchmarkPace(month.easyPace, "RPE 3–4"), strength: "Heavy Upper", core: "Core A", mobility: "10 min" },
+    { day: "Tuesday", date: dates[1], run: config.quality, miles: String(qualityMiles), pace: getQualityPace(config, month), strength: DASH, core: "Core B", mobility: "10 min" },
+    { day: "Wednesday", date: dates[2], run: "Easy Run", miles: String(wednesday), pace: benchmarkPace(month.easyPace, "RPE 3–4"), strength: "Heavy Legs", core: DASH, mobility: "10 min" },
+    { day: "Thursday", date: dates[3], run: "Recovery Run", miles: String(thursday), pace: benchmarkPace(month.recoveryPace, "RPE 2–3"), strength: DASH, core: "Core C", mobility: "15 min" },
+    { day: "Friday", date: dates[4], run: "Rest", miles: DASH, pace: "No pace — rest", strength: "Upper Moderate / Rest", core: "Core D", mobility: "15 min" },
+    { day: "Saturday", date: dates[5], run: "Long Run", miles: String(longRun), pace: benchmarkPace(month.longPace, "RPE 3–4"), strength: DASH, core: DASH, mobility: "10 min" },
     { day: "Sunday", date: dates[6], run: sunday, miles: DASH, pace: sunday === "Rest" ? "No pace — rest" : "Comfortable walking pace; RPE 2–4", strength: "Light Upper", core: DASH, mobility: "10 min" },
   ];
 
@@ -148,7 +151,7 @@ const monthConfigs: MonthConfig[] = [
     next: "May introduces measured goal-pace practice.",
   },
   {
-    id: "2027-05", title: "May Training Plan", phase: "Half-marathon peak and taper",
+    id: "2027-05", title: "May Training Plan", phase: "Provisional half-marathon peak and taper",
     easyPace: "11:45–12:30/mi", recoveryPace: "12:30–13:15/mi", longPace: "11:45–12:30/mi", tempoPace: "10:30–11:00/mi", intervalPace: "9:45–10:15/mi", hillPace: "Pace varies by grade",
     priorities: ["Complete the final race-specific workouts", "Do not force 10:00/mile", "Begin tapering in the second half of May", "Reduce heavy-leg volume before race week"],
     weeks: [
@@ -156,15 +159,15 @@ const monthConfigs: MonthConfig[] = [
       { start: "2027-05-10", focus: "Interval economy", miles: [5, 7, 5, 4, 12], quality: "Intervals: 6×800m with 400m jog", qualityPace: "RPE 8", sunday: "Easy Hike" },
       { start: "2027-05-17", focus: "Final sustained effort", miles: [5, 7, 5, 3, 11], quality: "Tempo: 2 easy + 2×2 mi + easy", qualityPace: "RPE 7", sunday: "Rest" },
       { start: "2027-05-24", focus: "Taper week", miles: [4, 4, 3, 2, 7], quality: "Easy + 4×20-sec strides", qualityPace: "Easy; strides RPE 7", sunday: "Rest" },
-      { start: "2027-05-31", focus: "Race window", miles: [3, 3, 2, 2, 13], quality: "Easy + 3×20-sec strides", qualityPace: "Keep everything relaxed", sunday: "Rest" },
+      { start: "2027-05-31", focus: "Provisional race window", miles: [3, 3, 2, 2, 13], quality: "Easy + 3×20-sec strides", qualityPace: "Keep everything relaxed", sunday: "Rest" },
     ],
     benchmark: "Race by sustainable effort. If 10:00/mile exceeded RPE 7 during repeated spring miles, choose the pace that matches current fitness.",
-    next: "Use the May 29–June 6 window for the first half marathon, then begin recovery.",
+    next: "The provisional May 29–June 6 window can hold the first half marathon once a race is selected; then begin recovery.",
   },
   {
     id: "2027-06", title: "June Training Plan", phase: "Race, recover, and reset",
     easyPace: "11:45–12:30/mi", recoveryPace: "12:30–13:15/mi", longPace: "11:30–12:15/mi", tempoPace: "10:20–10:50/mi", intervalPace: "9:40–10:10/mi", hillPace: "Pace varies by grade",
-    priorities: ["Use early June as the backup half-marathon window", "Take recovery seriously", "Return to running gradually", "Begin rebuilding toward the fall half marathon"],
+    priorities: ["Use early June only as a provisional backup half-marathon window", "Take recovery seriously", "Return to running gradually", "Begin rebuilding toward the fall half marathon"],
     weeks: [
       { start: "2027-06-07", focus: "Post-race recovery", miles: [3, 3, 3, 2, 6], quality: "All easy; walk breaks welcome", qualityPace: "RPE 2–3", sunday: "Rest" },
       { start: "2027-06-14", focus: "Gentle return", miles: [4, 4, 4, 3, 8], quality: "Easy + 4×20-sec strides", qualityPace: "Easy; strides RPE 7", sunday: "Easy Hike" },
@@ -196,7 +199,7 @@ const futurePlans: Plan[] = monthConfigs.map((month) => ({
   priorities: month.priorities,
   beforeWeeks: [
     {
-      paragraphs: ["Training paces are effort caps, not tests. Heat, hills, fatigue, and terrain may require a slower pace."],
+      paragraphs: ["RPE and current benchmarks choose the pace—not the calendar. The listed ranges are conditional references, never required progression; hold or slow them when heat, hills, fatigue, terrain, or benchmark results call for it."],
       callout: true,
     },
   ],

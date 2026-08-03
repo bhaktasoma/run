@@ -3,9 +3,11 @@ import WeekCard from "./WeekCard";
 
 interface PlanPageProps {
   plan: Plan;
+  completions: Record<string, boolean>;
+  onCompletionChange: (id: string, complete: boolean) => void;
 }
 
-export default function PlanPage({ plan }: PlanPageProps) {
+export default function PlanPage({ plan, completions, onCompletionChange }: PlanPageProps) {
   const renderSections = (sections: PlanSection[] = []) =>
     sections.map((section, index) => (
       <section
@@ -41,9 +43,11 @@ export default function PlanPage({ plan }: PlanPageProps) {
   return (
     <div className="plan-page">
       <header className="plan-page__header">
+        <p className="goal-page__eyebrow">Long-Term Roadmap</p>
         <h1 className="plan-page__title">{plan.title}</h1>
         {plan.intro && <p>{plan.intro}</p>}
       </header>
+      <aside className="roadmap-note">The long-term roadmap shows the intended direction through 2028. Only the current rolling eight-week plan is a specific prescription. Future weeks will be adjusted using completed training, recovery, benchmarks, health, and schedule.</aside>
       {plan.priorities && (
         <section className="plan-section">
           <h2>Priorities</h2>
@@ -54,7 +58,7 @@ export default function PlanPage({ plan }: PlanPageProps) {
       )}
       {renderSections(plan.beforeWeeks)}
       {plan.weeks.map((week) => (
-        <WeekCard key={week.title} week={week} />
+        <WeekCard key={`${plan.id}-${week.title}`} week={week} planId={plan.id} completions={completions} onCompletionChange={onCompletionChange} />
       ))}
       {renderSections(plan.afterWeeks)}
     </div>

@@ -1,18 +1,17 @@
-import { useState } from "react";
 import type { Week } from "../types";
 import { formatText } from "../utils/formatText";
 import FuelingGuide from "./FuelingGuide";
 
 interface WeekCardProps {
   week: Week;
+  planId: string;
+  completions: Record<string, boolean>;
+  onCompletionChange: (id: string, complete: boolean) => void;
 }
 
-export default function WeekCard({ week }: WeekCardProps) {
-  const [checked, setChecked] = useState<boolean[]>(() => week.days.map(() => false));
-
-  const toggleDay = (index: number) => {
-    setChecked((prev) => prev.map((value, i) => (i === index ? !value : value)));
-  };
+export default function WeekCard({ week, planId, completions, onCompletionChange }: WeekCardProps) {
+  const dayKeys = week.days.map((entry) => `${planId}|${entry.date}|${entry.day}|${entry.run}`);
+  const checked = dayKeys.map((key) => Boolean(completions[key]));
 
   const completedCount = checked.filter(Boolean).length;
 
@@ -67,7 +66,7 @@ export default function WeekCard({ week }: WeekCardProps) {
                   <input
                     type="checkbox"
                     checked={checked[index]}
-                    onChange={() => toggleDay(index)}
+                    onChange={(event) => onCompletionChange(dayKeys[index], event.target.checked)}
                     aria-label={`Mark ${entry.day} ${entry.date} complete`}
                   />
                 </td>

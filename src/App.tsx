@@ -5,9 +5,13 @@ import PlanPage from "./components/PlanPage";
 import WorkoutPlanPage from "./components/WorkoutPlanPage";
 import GoalPage from "./components/GoalPage";
 import RunLogPage from "./components/RunLogPage";
+import TodayPage from "./components/TodayPage";
+import CurrentPlanPage from "./components/CurrentPlanPage";
+import ProgressPage from "./components/ProgressPage";
+import useTrainingStore from "./hooks/useTrainingStore";
 import "./App.css";
 
-type Page = { kind: "plan"; id: string } | { kind: "workout" } | { kind: "goal" } | { kind: "log" };
+type Page = { kind: "today" } | { kind: "current" } | { kind: "progress" } | { kind: "plan"; id: string } | { kind: "workout" } | { kind: "goal" } | { kind: "log" };
 
 const monthOptions = Array.from({ length: 27 }, (_, index) => {
   const date = new Date(2026, 7 + index, 1);
@@ -19,16 +23,20 @@ const monthOptions = Array.from({ length: 27 }, (_, index) => {
 });
 
 function App() {
-  const [page, setPage] = useState<Page>({ kind: "plan", id: monthOptions[0].id });
+  const [page, setPage] = useState<Page>({ kind: "today" });
+  const training = useTrainingStore();
   const selectedPlan = page.kind === "plan" ? plans.find((plan) => plan.id === page.id) : undefined;
 
   return (
     <div className="app">
-      <nav className="app__nav">
+      <nav className="app__nav" aria-label="Primary navigation">
         <div className="app__brand" aria-label="Run Training home">
           <span className="app__brand-mark">R</span>
           <span className="app__brand-name">Run Training</span>
         </div>
+        <button type="button" className={page.kind === "today" ? "app__nav-btn is-active" : "app__nav-btn"} onClick={() => setPage({ kind: "today" })}>Today</button>
+        <button type="button" className={page.kind === "current" ? "app__nav-btn is-active" : "app__nav-btn"} onClick={() => setPage({ kind: "current" })}>Current Plan</button>
+        <button type="button" className={page.kind === "progress" ? "app__nav-btn is-active" : "app__nav-btn"} onClick={() => setPage({ kind: "progress" })}>Progress</button>
         <label className="app__month-picker">
           <span className="sr-only">Select training plan month</span>
           <select
@@ -49,7 +57,7 @@ function App() {
           className={page.kind === "workout" ? "app__nav-btn is-active" : "app__nav-btn"}
           onClick={() => setPage({ kind: "workout" })}
         >
-          Workout Plan
+          Strength
         </button>
         <button
           type="button"
@@ -67,14 +75,20 @@ function App() {
         </button>
       </nav>
 
-      {page.kind === "log" ? (
-        <RunLogPage />
+      {page.kind === "today" ? (
+        <TodayPage store={training.store} onSaveEntry={training.upsertEntry} />
+      ) : page.kind === "current" ? (
+        <CurrentPlanPage store={training.store} onSaveCheckIn={training.upsertCheckIn} onSaveDecision={training.saveDecision} />
+      ) : page.kind === "progress" ? (
+        <ProgressPage store={training.store} onAddBenchmark={training.addBenchmark} onSavePaceGuidance={training.savePaceGuidance} />
+      ) : page.kind === "log" ? (
+        <RunLogPage store={training.store} onSave={training.upsertEntry} onDelete={training.deleteEntry} />
       ) : page.kind === "goal" ? (
         <GoalPage />
       ) : page.kind === "workout" ? (
         <WorkoutPlanPage plan={workoutPlan} />
       ) : selectedPlan ? (
-        <PlanPage plan={selectedPlan} />
+        <PlanPage plan={selectedPlan} completions={training.store.roadmapCompletions} onCompletionChange={training.setRoadmapCompletion} />
       ) : (
         <div className="plan-page__empty">
           <h1>{monthOptions.find((month) => month.id === page.id)?.label}</h1>

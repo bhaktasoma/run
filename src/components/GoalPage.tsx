@@ -13,7 +13,7 @@ export default function GoalPage() {
         <section className="goal-card">
           <span className="goal-card__number">01</span>
           <h2>First 2027 Half Marathon</h2>
-          <p>Race in late May or early June and use the result to measure progress.</p>
+          <p>Provisional window: late May or early June. Choose a race and use the result to measure progress.</p>
           <p className="goal-card__metric">Goal: healthy, controlled benchmark</p>
           <p>Choose the final pace from spring workouts rather than forcing 10:00/mile before it is sustainable.</p>
         </section>
@@ -46,14 +46,14 @@ export default function GoalPage() {
           <div className="goal-card__options">
             <div>
               <strong>Long Beach Marathon</strong>
-              <span>Early October target · flatter coastal course</span>
+              <span>Provisional early October target · flatter coastal course</span>
               <a className="goal-card__link" href="https://runlongbeach.com/" target="_blank" rel="noreferrer">
                 Official race site <span aria-hidden="true">↗</span>
               </a>
             </div>
             <div>
               <strong>Santa Cruz Marathon</strong>
-              <span>Late October alternative · rugged coastal terrain</span>
+              <span>Provisional fall alternative · rugged coastal terrain</span>
               <a className="goal-card__link" href="https://www.runsantacruz.com/" target="_blank" rel="noreferrer">
                 Official race site <span aria-hidden="true">↗</span>
               </a>

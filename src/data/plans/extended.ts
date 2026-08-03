@@ -1,4 +1,5 @@
 import type { DayEntry, Plan, Week } from "../../types";
+import { sumMileageValues } from "../../domain/progression.ts";
 
 const DASH = "—";
 
@@ -29,7 +30,7 @@ const blocks: MonthBlock[] = [
   { id: "2028-07", phase: "Marathon block: weeks 5–9", totals: [37, 39, 40, 32, 39], longRuns: [15, 16, 17, 12, 16], quality: ["6-mile marathon-effort block", "6×1-mile cruise intervals", "8-mile progression", "4×20-sec strides", "7-mile marathon-effort block"], qualityPace: "10:30–11:15/mi; RPE 6", easyPace: "11:40–12:30/mi", longPace: "11:35–12:25/mi or 3:10 cap", goal: "Build long-run durability while keeping the majority of miles easy." },
   { id: "2028-08", phase: "Marathon block: weeks 10–13", totals: [40, 41, 42, 33], longRuns: [17, 18, 18, 13], quality: ["8-mile marathon-effort block", "5×1-mile cruise intervals", "10-mile steady progression", "6×20-sec strides"], qualityPace: "10:30–11:15/mi; RPE 6", easyPace: "11:45–12:35/mi", longPace: "11:40–12:30/mi or 3:15 cap", goal: "Reach peak time-on-feet without chasing excessive long-run duration." },
   { id: "2028-09", phase: "Marathon peak and taper", totals: [42, 40, 34, 27], longRuns: [18, 20, 16, 10], quality: ["8-mile marathon-effort block", "6-mile marathon-effort block", "4×1 mile controlled", "4×20-sec strides"], qualityPace: "10:35–11:20/mi; RPE 6", easyPace: "11:50–12:40/mi", longPace: "11:45–12:35/mi; cap longest run near 3:15", goal: "Complete the final peak, then reduce volume while retaining rhythm." },
-  { id: "2028-10", phase: "Long Beach race and recovery", totals: [34, 16, 18, 21, 24], longRuns: [26, 5, 6, 7, 8], quality: ["Race-week strides", "All recovery", "All easy", "4×20-sec strides", "Light steady running"], qualityPace: "Race by sustainable effort; recovery RPE 2–3", easyPace: "12:15–13:30/mi", longPace: "Race plan or easy recovery", goal: "Finish the first marathon strong. Santa Cruz is the late-October backup if Long Beach is unavailable." },
+  { id: "2028-10", phase: "Provisional Long Beach race window and recovery", totals: [34, 16, 18, 21, 24], longRuns: [26, 5, 6, 7, 8], quality: ["Race-week strides", "All recovery", "All easy", "4×20-sec strides", "Light steady running"], qualityPace: "Race by sustainable effort; recovery RPE 2–3", easyPace: "12:15–13:30/mi", longPace: "Race plan or easy recovery", goal: "Finish the first marathon strong. Long Beach and the Santa Cruz backup remain provisional until official 2028 dates are confirmed." },
 ];
 
 const monthName = (id: string) => new Date(`${id}-01T00:00:00Z`).toLocaleDateString("en-US", { month: "long", timeZone: "UTC" });
@@ -48,6 +49,9 @@ const mondayDates = (id: string) => {
 
 const label = (date: Date) => date.toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 
+const benchmarkPace = (pace: string, rpe: string) =>
+  `${rpe}; ${pace} only if recent benchmark and recovery support it`;
+
 const buildWeek = (block: MonthBlock, start: Date, index: number): Week => {
   const dates = Array.from({ length: 7 }, (_, offset) => new Date(start.getTime() + offset * 86400000));
   const total = block.totals[index];
@@ -60,19 +64,21 @@ const buildWeek = (block: MonthBlock, start: Date, index: number): Week => {
   const isMonterey = block.id === "2027-11" && index === 1;
   const isLongBeach = block.id === "2028-10" && index === 0;
   const raceMiles = isMonterey ? "13.1" : "26.2";
-  const raceName = isMonterey ? "Monterey Bay Half Marathon" : "Long Beach Marathon — date TBD";
+  const raceName = isMonterey ? "Monterey Bay Half Marathon" : "Long Beach Marathon — provisional date TBD";
 
   const days: DayEntry[] = [
-    { day: "Monday", date: label(dates[0]), run: "Easy Run", miles: String(mon), pace: `${block.easyPace}; RPE 3–4`, strength: "Upper Body", core: "Core A", mobility: "10 min" },
-    { day: "Tuesday", date: label(dates[1]), run: block.quality[index], miles: String(tue), pace: block.qualityPace, strength: "Light Legs", core: "Core B", mobility: "10 min" },
-    { day: "Wednesday", date: label(dates[2]), run: "Easy Run", miles: String(wed), pace: `${block.easyPace}; RPE 3–4`, strength: "Upper Body", core: DASH, mobility: "10 min" },
-    { day: "Thursday", date: label(dates[3]), run: "Recovery Run", miles: String(thu), pace: `${block.easyPace}; RPE 2–3`, strength: DASH, core: "Core C", mobility: "15 min" },
-    { day: "Friday", date: label(dates[4]), run: "Rest", miles: DASH, pace: "No pace — rest", strength: index >= block.totals.length - 2 ? "Light Legs only" : "Heavy Legs", core: "Core D", mobility: "15 min" },
-    { day: "Saturday", date: label(dates[5]), run: isMonterey || isLongBeach ? "Shakeout or Rest" : "Long Run", miles: isMonterey || isLongBeach ? "2" : String(long), pace: isMonterey || isLongBeach ? "Very easy; RPE 2" : block.longPace, strength: DASH, core: DASH, mobility: "10 min" },
+    { day: "Monday", date: label(dates[0]), run: "Easy Run", miles: String(mon), pace: benchmarkPace(block.easyPace, "RPE 3–4"), strength: "Upper Body", core: "Core A", mobility: "10 min" },
+    { day: "Tuesday", date: label(dates[1]), run: block.quality[index], miles: String(tue), pace: `${block.qualityPace}; use RPE first and pace only when benchmark-supported`, strength: DASH, core: "Core B", mobility: "10 min" },
+    { day: "Wednesday", date: label(dates[2]), run: "Easy Run", miles: String(wed), pace: benchmarkPace(block.easyPace, "RPE 3–4"), strength: index >= block.totals.length - 2 ? "Light Legs only" : "Heavy Legs", core: DASH, mobility: "10 min" },
+    { day: "Thursday", date: label(dates[3]), run: "Recovery Run", miles: String(thu), pace: benchmarkPace(block.easyPace, "RPE 2–3"), strength: DASH, core: "Core C", mobility: "15 min" },
+    { day: "Friday", date: label(dates[4]), run: "Rest", miles: DASH, pace: "No pace — rest", strength: "Upper Body / Rest", core: "Core D", mobility: "15 min" },
+    { day: "Saturday", date: label(dates[5]), run: isMonterey || isLongBeach ? "Shakeout or Rest" : "Long Run", miles: isMonterey || isLongBeach ? "2" : String(long), pace: isMonterey || isLongBeach ? "Very easy; RPE 2" : benchmarkPace(block.longPace, "RPE 3–4"), strength: DASH, core: DASH, mobility: "10 min" },
     { day: "Sunday", date: label(dates[6]), run: isMonterey || isLongBeach ? raceName : "Rest or Easy Hike", miles: isMonterey || isLongBeach ? raceMiles : DASH, pace: isMonterey || isLongBeach ? "Race by sustainable effort" : "Comfortable walking pace; RPE 2–3", strength: DASH, core: DASH, mobility: "Gentle only" },
   ];
 
-  return { title: `Week ${index + 1}`, subtitle: `${label(dates[0])} – ${label(dates[6])}`, note: isMonterey || isLongBeach ? "Race week" : index === block.totals.length - 1 ? "Recovery / transition" : block.phase, weeklyMileage: isMonterey || isLongBeach ? `${raceMiles}-mile race week` : `${total} miles`, days };
+  const scheduledMileage = sumMileageValues(days.map((day) => day.miles));
+
+  return { title: `Week ${index + 1}`, subtitle: `${label(dates[0])} – ${label(dates[6])}`, note: isMonterey || isLongBeach ? "Race week" : index === block.totals.length - 1 ? "Recovery / transition" : block.phase, weeklyMileage: isMonterey || isLongBeach ? `${scheduledMileage.toFixed(1)} miles incl. warm-ups, shakeout & race` : `${total} miles`, days };
 };
 
 const extendedPlans: Plan[] = blocks.map((block) => {
@@ -82,11 +88,11 @@ const extendedPlans: Plan[] = blocks.map((block) => {
     title: `${monthName(block.id)} Training Plan`,
     intro: `${block.phase}. This plan assumes the previous block was completed without persistent pain or unusual fatigue.`,
     priorities: [block.goal, "Keep easy days conversational.", "Reduce or repeat a week when recovery worsens.", "Maintain strength without compromising the next key run."],
-    beforeWeeks: [{ paragraphs: ["Mileage and pace are targets, not obligations. Use the time cap on long runs when it comes first, and update the exact taper when official race dates are announced."], callout: true }],
+    beforeWeeks: [{ paragraphs: ["Mileage is a target, but RPE and current benchmarks choose the pace—not the calendar. Listed ranges are conditional references. Use the time cap on long runs when it comes first, and update the exact taper when official race dates are announced."], callout: true }],
     weeks: starts.map((start, index) => buildWeek(block, start, index)),
     afterWeeks: [
       { title: "Phase Goal", paragraphs: [block.goal] },
-      ...(block.id === "2028-10" ? [{ title: "Santa Cruz Backup", paragraphs: ["If Santa Cruz becomes the target, repeat a reduced maintenance week after the Long Beach window and shift the final race week to the official late-October date. Do not run both full marathons."] }] : []),
+      ...(block.id === "2028-10" ? [{ title: "Santa Cruz Backup — Provisional", paragraphs: ["If Santa Cruz becomes the target, repeat a reduced maintenance week after the provisional Long Beach window and shift the final race week to the official date once announced. Do not run both full marathons."] }] : []),
       { title: "Adjustment Rules", bullets: ["Stop and reassess pain that changes your stride.", "Do not make up missed mileage.", "After any race, prioritize recovery before resuming the next block."] },
     ],
   };
