@@ -71,6 +71,9 @@ export interface BenchmarkEntry {
   distance: string;
   duration: string;
   averageRpe: string;
+  terrain?: Terrain;
+  elevationGain?: string;
+  conditions?: string;
   notes: string;
 }
 
