@@ -1,5 +1,6 @@
 import type { Plan, PlanSection } from "../types";
 import WeekCard from "./WeekCard";
+import { roadmapMonthLabel } from "../data/roadmapAlignment.ts";
 
 interface PlanPageProps {
   plan: Plan;
@@ -46,7 +47,7 @@ export default function PlanPage({ plan, plans, onSelectPlan }: PlanPageProps) {
         <p className="goal-page__eyebrow">Long-Term Roadmap</p>
         <h1 className="plan-page__title">{plan.title}</h1>
         {plan.intro && <p>{plan.intro}</p>}
-        <label className="roadmap-month-picker">Roadmap month<select value={plan.id} onChange={(event) => onSelectPlan(event.target.value)}>{plans.map((item) => <option key={item.id} value={item.id}>{item.title}</option>)}</select></label>
+        <label className="roadmap-month-picker">Roadmap month<select value={plan.id} onChange={(event) => onSelectPlan(event.target.value)}>{plans.map((item) => <option key={item.id} value={item.id}>{roadmapMonthLabel(item.id)}</option>)}</select></label>
       </header>
       <aside className="roadmap-note">The long-term roadmap shows the intended direction through 2028. Only the current rolling eight-week plan is a specific prescription. Future weeks will be adjusted using completed training, recovery, benchmarks, health, and schedule.</aside>
       {plan.priorities && (

@@ -1256,9 +1256,21 @@
 .progress-onboarding, .benchmark-disclosure { margin: 18px 0; padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
 .benchmark-disclosure > summary { color: var(--accent); font-weight: 750; cursor: pointer; }
 .benchmark-disclosure .benchmark-card { margin: 16px 0 0; }
+.plan-onboarding { display: grid; gap: 16px; margin: -20px 0 28px; padding: 20px; border: 1px solid var(--accent-border); border-radius: 14px; background: var(--accent-bg); }
+.plan-onboarding h2 { margin: 0; color: var(--text-h); }
+.plan-onboarding ol { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; counter-reset: onboarding; }
+.plan-onboarding li { position: relative; display: grid; align-content: start; gap: 4px; min-width: 0; padding: 12px; border-radius: 9px; background: var(--surface); counter-increment: onboarding; }
+.plan-onboarding li::before { content: counter(onboarding); color: var(--accent); font-size: 11px; font-weight: 800; }
+.plan-onboarding li:not(:last-child)::after { content: "→"; position: absolute; top: 50%; right: -8px; z-index: 1; color: var(--accent); transform: translate(50%, -50%); }
+.plan-onboarding li strong { color: var(--text-h); font-size: 12px; }.plan-onboarding li span { color: var(--text); font-size: 11px; }
+.plan-onboarding__actions { display: flex; gap: 8px; }
+.today-log-section h2[tabindex="-1"]:focus-visible { outline: 3px solid var(--accent-border); outline-offset: 5px; border-radius: 4px; }
 .chart-card:has(> .chart-empty) { display: none; }
 
 @media (max-width: 600px) {
+  .plan-onboarding { margin-top: -18px; padding: 16px; }
+  .plan-onboarding ol { grid-template-columns: 1fr; }
+  .plan-onboarding li:not(:last-child)::after { content: "↓"; top: auto; right: 50%; bottom: -10px; transform: translate(50%, 50%); }
   .app__nav { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; overflow: visible; }
   .app__brand-name, .app__roadmap-link { display: none; }
   .app__primary-links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); min-width: 0; }
@@ -1306,6 +1318,10 @@
   .strength-exercise__history, .strength-exercise__inputs, .strength-check-in { grid-template-columns: 1fr 1fr; }
   .strength-set-reps { grid-column: 1 / -1; }
   .strength-check-in__notes { grid-column: 1 / -1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
 
 @media (max-width: 420px) {

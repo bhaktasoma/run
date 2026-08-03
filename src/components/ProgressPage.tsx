@@ -5,11 +5,11 @@ import type { BenchmarkEntry, TrainingStore } from "../domain/training.ts";
 import { trainingDateIso } from "../utils/trainingDate.ts";
 import ProgressGraphs from "./ProgressGraphs.tsx";
 
-interface ProgressPageProps { store: TrainingStore; onAddBenchmark: (benchmark: BenchmarkEntry) => void; onSavePaceGuidance: (benchmarkId: string, text: string, accepted: boolean) => void; }
+interface ProgressPageProps { store: TrainingStore; onAddBenchmark: (benchmark: BenchmarkEntry) => void; onSavePaceGuidance: (benchmarkId: string, text: string, accepted: boolean) => void; onLogRun: () => void; }
 
 const emptyBenchmark = (): Omit<BenchmarkEntry, "id"> => ({ date: trainingDateIso(), type: "Same easy route", distance: "", duration: "", averageRpe: "4", notes: "", terrain: "flat", elevationGain: "", conditions: "" });
 
-export default function ProgressPage({ store, onAddBenchmark, onSavePaceGuidance }: ProgressPageProps) {
+export default function ProgressPage({ store, onAddBenchmark, onSavePaceGuidance, onLogRun }: ProgressPageProps) {
   const [benchmark, setBenchmark] = useState(emptyBenchmark);
   const currentWeek = activePlan.find((week) => week.workouts.some((workout) => workout.date >= trainingDateIso())) ?? activePlan.at(-1)!;
   const recommendation = recommendWeek(currentWeek, entriesForWeek(currentWeek, store.entries), store.checkIns.find((item) => item.weekId === currentWeek.id), trainingDateIso());
@@ -32,7 +32,7 @@ export default function ProgressPage({ store, onAddBenchmark, onSavePaceGuidance
   return <main className="progress-page">
     <header className="section-hero"><p className="goal-page__eyebrow">Decision-useful trends</p><h1>Progress</h1><p>Use repeatable evidence to see what is building. No readiness percentage or automatic pace progression.</p></header>
     <section className="recommendation-card"><span className={`recommendation-badge recommendation-badge--${recommendation.state.toLowerCase()}`}>{recommendation.state}</span><div><h2>{recommendation.summary}</h2><ul>{recommendation.reasons.map((reason) => <li key={reason}>{reason}</li>)}</ul></div></section>
-    {!store.entries.length && !store.benchmarks.length ? <section className="progress-onboarding"><h2>Your progress will appear here</h2><p>To build meaningful trends, log:</p><ul><li>3 comparable easy runs</li><li>2 long runs</li><li>2 completed training weeks</li><li>Comparable controlled benchmarks</li></ul><a className="run-log-form__save" href="#today-log">Log a run from Today</a></section> : <ProgressGraphs store={store} />}
+    {!store.entries.length && !store.benchmarks.length ? <section className="progress-onboarding"><h2>Your progress will appear here</h2><p>To build meaningful trends, log:</p><ul><li>3 comparable easy runs</li><li>2 long runs</li><li>2 completed training weeks</li><li>Comparable controlled benchmarks</li></ul><button className="run-log-form__save" type="button" onClick={onLogRun}>Log a run from Today</button></section> : <ProgressGraphs store={store} />}
     <section aria-labelledby="status-title"><p className="goal-page__eyebrow">Supporting signals</p><h2 id="status-title">Status</h2><div className="progress-status-grid">
       <article><strong>Pain &amp; recovery</strong><span>{painFlags.length ? `${painFlags.length} pain flag${painFlags.length === 1 ? "" : "s"}` : "No pain flags recorded"}</span><small>{store.checkIns.length} weekly check-ins saved</small></article>
       <article><strong>Strength consistency</strong><span>{strengthCompleted} session{strengthCompleted === 1 ? "" : "s"} completed</span><small>Shown separately from running volume</small></article>

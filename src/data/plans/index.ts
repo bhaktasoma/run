@@ -4,6 +4,7 @@ import plan202609 from "./2026-09.ts";
 import plan202610 from "./2026-10.ts";
 import futurePlans from "./future.ts";
 import extendedPlans from "./extended.ts";
+import { alignRoadmapWithActivePlan } from "../roadmapAlignment.ts";
 
 const alignStrengthSchedule = (plan: Plan): Plan => ({
   ...plan,
@@ -35,6 +36,6 @@ const alignStrengthSchedule = (plan: Plan): Plan => ({
 });
 
 // Add new months here as they're created, newest last.
-const plans: Plan[] = [plan202607, plan202609, plan202610, ...futurePlans, ...extendedPlans].map(alignStrengthSchedule);
+const plans: Plan[] = alignRoadmapWithActivePlan([plan202607, plan202609, plan202610, ...futurePlans, ...extendedPlans].map(alignStrengthSchedule));
 
 export default plans;

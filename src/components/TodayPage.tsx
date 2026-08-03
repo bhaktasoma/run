@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import activePlan from "../data/activePlan.ts";
 import { completedMileage, entriesForWeek, recommendWeek } from "../domain/progression.ts";
 import type { RunEntry, TrainingStore } from "../domain/training.ts";
@@ -10,9 +10,11 @@ interface TodayPageProps {
   store: TrainingStore;
   onSaveEntry: (entry: RunEntry) => void;
   onOpenStrength?: () => void;
+  focusLog?: boolean;
+  onLogFocused?: () => void;
 }
 
-export default function TodayPage({ store, onSaveEntry, onOpenStrength }: TodayPageProps) {
+export default function TodayPage({ store, onSaveEntry, onOpenStrength, focusLog = false, onLogFocused }: TodayPageProps) {
   const [showPastRun, setShowPastRun] = useState(false);
   const [pastEntry, setPastEntry] = useState<RunEntry>();
   const today = trainingDateIso();
@@ -29,7 +31,11 @@ export default function TodayPage({ store, onSaveEntry, onOpenStrength }: TodayP
   const countdown = daysBetweenIsoDates(today, montereyTarget.internalDate);
   const runTitle = todayWorkout.title.replace(/\s*\+\s*Full Body [AB].*$/i, "");
   const hasStrength = /Full Body [AB]/i.test(todayWorkout.title);
+  const strengthTitle = todayWorkout.title.match(/Full Body [AB]/i)?.[0] ?? "Strength";
   const existing = store.entries.find((entry) => entry.workoutId === todayWorkout.id);
+  const logHeadingRef = useRef<HTMLHeadingElement>(null);
+  const runWorkout = { ...todayWorkout, title: runTitle, targetRpe: todayWorkout.targetRpe.split(";")[0], steps: todayWorkout.steps?.filter((step) => !/Full Body/i.test(step)) };
+  useEffect(() => { if (!focusLog) return; logHeadingRef.current?.scrollIntoView({ block: "start" }); logHeadingRef.current?.focus({ preventScroll: true }); onLogFocused?.(); }, [focusLog, onLogFocused]);
 
   return (
     <main className="today-page">
@@ -38,7 +44,7 @@ export default function TodayPage({ store, onSaveEntry, onOpenStrength }: TodayP
       </header>
 
       <section className="today-grid" aria-label="Today overview">
-        {hasStrength && <article className="focus-card focus-card--primary"><p className="metric-label">Separate activity</p><strong>Full Body A · reduced return session</strong><span>After the run or later today, only if normal movement feels comfortable.</span><button className="app__nav-btn" type="button" onClick={onOpenStrength}>Open strength session</button></article>}
+        {hasStrength && <article className="focus-card focus-card--primary"><p className="metric-label">Separate activity</p><strong>{strengthTitle} · reduced return session</strong><span>After the run or later today, only if normal movement feels comfortable.</span><button className="app__nav-btn" type="button" onClick={onOpenStrength}>Open strength session</button></article>}
         <article className="focus-card"><p className="metric-label">This week</p><strong>{completedMileage(weekEntries).toFixed(1)} / {currentWeek.plannedMiles} mi</strong><span>completed / planned</span></article>
         <article className="focus-card"><p className="metric-label">Next long run</p><strong>{nextLongRun ? `${nextLongRun.plannedMiles} miles` : "Not scheduled"}</strong><span>{nextLongRun?.date ?? "—"} · RPE 3–4</span></article>
         <article className="focus-card"><p className="metric-label">Provisional race target</p><strong>{countdown} days · provisional</strong><span>{montereyTarget.title} · {montereyTarget.confirmation}</span></article>
@@ -51,8 +57,8 @@ export default function TodayPage({ store, onSaveEntry, onOpenStrength }: TodayP
       </section>
 
       <section className="today-log-section" id="today-log">
-        <div className="today-log-section__heading"><div><h2>{existing ? "Update today’s completion" : "Log today’s workout"}</h2><p>The required fields are kept short; watch and route context stays collapsed.</p></div><button className="app__nav-btn" type="button" onClick={() => { setShowPastRun((value) => !value); setPastEntry(undefined); }}>Log a past run</button></div>
-        <QuickLogForm key={existing?.id ?? todayWorkout.id} workout={todayWorkout} initial={existing} entries={store.entries} onSave={onSaveEntry} onEditExisting={setPastEntry} />
+        <div className="today-log-section__heading"><div><h2 ref={logHeadingRef} tabIndex={-1}>{existing ? "Update today’s completion" : "Log today’s workout"}</h2><p>The required fields are kept short; watch and route context stays collapsed.</p></div><button className="app__nav-btn" type="button" onClick={() => { setShowPastRun((value) => !value); setPastEntry(undefined); }}>Log a past run</button></div>
+        <QuickLogForm key={existing?.id ?? todayWorkout.id} workout={runWorkout} initial={existing} entries={store.entries} onSave={onSaveEntry} onEditExisting={setPastEntry} />
       </section>
       {(showPastRun || pastEntry) && <section className="today-log-section"><h2>{pastEntry ? "Edit existing run" : "Log a past run"}</h2><QuickLogForm key={pastEntry?.id ?? "past-run"} initial={pastEntry} entries={store.entries} onSave={(entry) => { onSaveEntry(entry); setShowPastRun(false); setPastEntry(undefined); }} onEditExisting={setPastEntry} onCancel={() => { setShowPastRun(false); setPastEntry(undefined); }} /></section>}
     </main>

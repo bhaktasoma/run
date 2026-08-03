@@ -43,6 +43,7 @@ test("post-race recovery conditionally reduces required strength and suppresses 
   assert.equal(adapted.sessions.length, 2);
   assert.deepEqual(adapted.suppressedSessionIds, ["aesthetic"]);
   assert.ok(adapted.sessions.flatMap((session) => session.exercises).filter((exercise) => exercise.lowerBody).every((exercise) => exercise.sets <= 2));
+  assert.ok(adapted.sessions.every((session) => session.duration === "25–35 min"));
 });
 
 test("marathon peak reduces lower-body volume by about one third", () => {
