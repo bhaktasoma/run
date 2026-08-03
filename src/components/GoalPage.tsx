@@ -1,6 +1,6 @@
 export default function GoalPage() {
   const goals = [
-    { number: "01", title: "First 2027 benchmark half marathon", text: "Provisional late-May or early-June window. Run healthy and controlled, then use the result to review future pace guidance.", metric: "Goal: measure progress without forcing pace" },
+    { number: "01", title: "First 2027 benchmark half marathon", text: "Napa Spring Half Marathon — April 25, 2027, 7:00 a.m. Run healthy and controlled, then use the result to review future pace guidance.", metric: "Goal: measure progress without forcing pace", link: "https://napaspringhalf.com/" },
     { number: "02", title: "Monterey Bay Half Marathon", text: "Provisional November 2027 target. Confirm when officially announced.", metric: "Consider 10:00/mile only if comparable benchmarks support it", link: "https://www.montereybayhalfmarathon.org/" },
     { number: "03", title: "Optional spring 2028 endurance event", text: "Use an optional half marathon or supported long run to reinforce endurance and fueling without requiring an all-out performance.", metric: "Goal: prepare for marathon training" },
     { number: "04", title: "First full marathon", text: "Provisional fall 2028 target. Long Beach is the primary option and Santa Cruz is an alternative; confirm when official dates are announced.", metric: "Primary goal: finish strong", links: [["Long Beach", "https://runlongbeach.com/"], ["Santa Cruz", "https://www.runsantacruz.com/"]] },

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import plans from "./data/plans";
 import PlanPage from "./components/PlanPage";
 import WorkoutPlanPage from "./components/WorkoutPlanPage";
@@ -19,18 +19,21 @@ export default function App() {
   const [page, setPage] = useState<Page>({ kind: "today" });
   const [showOnboarding, setShowOnboarding] = useState(() => !onboardingWasDismissed());
   const [focusTodayLog, setFocusTodayLog] = useState(false);
+  const moreMenuRef = useRef<HTMLDetailsElement>(null);
   const training = useTrainingStore();
   const selectedPlan = page.kind === "roadmap" ? plans.find((plan) => plan.id === page.id) ?? plans[0] : plans[0];
   const navigate = (kind: Page["kind"]) => setPage(kind === "roadmap" ? { kind, id: selectedPlan.id } : { kind } as Page);
   const primary = [["today", "Today"], ["current", "Plan"], ["progress", "Progress"], ["strength", "Strength"]] as const;
   const dismissOnboarding = () => { saveOnboardingDismissal(); setShowOnboarding(false); };
   const openTodayLog = () => { setFocusTodayLog(true); setPage({ kind: "today" }); };
+  const closeMore = () => { if (moreMenuRef.current) moreMenuRef.current.open = false; };
+  const navigateFromMore = (kind: Page["kind"]) => { closeMore(); navigate(kind); };
 
   return <div className="app">
     <nav className="app__nav" aria-label="Primary navigation"><div className="app__brand" aria-label="Run Training home"><span className="app__brand-mark">R</span><span className="app__brand-name">Run Training</span></div>
       <div className="app__primary-links">{primary.map(([kind, label]) => <button key={kind} type="button" className={page.kind === kind ? "app__nav-btn is-active" : "app__nav-btn"} aria-current={page.kind === kind ? "page" : undefined} onClick={() => navigate(kind)}>{label}</button>)}</div>
       <button className={page.kind === "roadmap" ? "app__nav-btn app__roadmap-link is-active" : "app__nav-btn app__roadmap-link"} type="button" onClick={() => navigate("roadmap")}>Roadmap</button>
-      <details className="app__more"><summary className="app__nav-btn">More</summary><div><button type="button" className={page.kind === "roadmap" ? "is-active" : ""} onClick={() => navigate("roadmap")}>Roadmap</button><button type="button" className={page.kind === "goal" ? "is-active" : ""} onClick={() => navigate("goal")}>Goal</button><button type="button" className={page.kind === "log" ? "is-active" : ""} onClick={() => navigate("log")}>Run History &amp; Backup</button><button type="button" className={page.kind === "guides" ? "is-active" : ""} onClick={() => navigate("guides")}>Guides</button><button type="button" onClick={() => setShowOnboarding(true)}>How this plan works</button></div></details>
+      <details className="app__more" ref={moreMenuRef}><summary className="app__nav-btn">More</summary><div><button type="button" className={page.kind === "roadmap" ? "is-active" : ""} onClick={() => navigateFromMore("roadmap")}>Roadmap</button><button type="button" className={page.kind === "goal" ? "is-active" : ""} onClick={() => navigateFromMore("goal")}>Goal</button><button type="button" className={page.kind === "log" ? "is-active" : ""} onClick={() => navigateFromMore("log")}>Run History &amp; Backup</button><button type="button" className={page.kind === "guides" ? "is-active" : ""} onClick={() => navigateFromMore("guides")}>Guides</button><button type="button" onClick={() => { closeMore(); setShowOnboarding(true); }}>How this plan works</button></div></details>
     </nav>
     {showOnboarding && <PlanOnboarding onDismiss={dismissOnboarding} />}
     {page.kind === "today" ? <TodayPage store={training.store} onSaveEntry={training.upsertEntry} onOpenStrength={() => navigate("strength")} focusLog={focusTodayLog} onLogFocused={() => setFocusTodayLog(false)} />
