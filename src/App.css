@@ -211,11 +211,22 @@
 .strength-hero aside { display: grid; align-content: center; gap: 4px; padding: 18px; border-radius: 11px; background: var(--accent-bg); }
 .strength-hero aside span, .strength-hero aside small { font-size: 12px; }
 .strength-hero aside strong { color: var(--text-h); font-size: 18px; }
-.strength-schedule { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
-.strength-schedule > div { display: grid; gap: 3px; padding: 14px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); }
-.strength-schedule strong { color: var(--text-h); }
-.strength-schedule span { font-size: 12px; }
-.strength-schedule .is-optional { border-style: dashed; background: var(--accent-bg); }
+.strength-plan-overview { margin-bottom: 14px; }
+.strength-plan-overview > header { display: flex; justify-content: space-between; align-items: end; gap: 20px; margin-bottom: 12px; }
+.strength-plan-overview > header p:last-child { max-width: 560px; margin: 0; font-size: 13px; }
+.strength-plan-overview__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.strength-plan-overview__grid > details, .strength-plan-rest { padding: 15px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+.strength-plan-overview__grid > details.is-optional { border-style: dashed; border-color: var(--accent-border); background: var(--accent-bg); }
+.strength-plan-overview__grid summary { display: grid; grid-template-columns: 75px 1fr auto; align-items: baseline; gap: 8px; color: var(--text-h); cursor: pointer; }
+.strength-plan-overview__grid summary span, .strength-plan-overview__grid summary small, .strength-plan-rest > span { font-size: 11px; }
+.strength-plan-overview__grid ol { display: grid; gap: 6px; margin: 13px 0 0; padding-left: 22px; }
+.strength-plan-overview__grid li { padding-left: 3px; }
+.strength-plan-overview__grid li > div { display: flex; justify-content: space-between; gap: 10px; }
+.strength-plan-overview__grid li > div > span { font-size: 12px; white-space: nowrap; }
+.strength-plan-overview__grid .exercise-reference { margin-left: 0; }
+.strength-plan-rest { display: grid; align-content: start; gap: 4px; }
+.strength-plan-rest > strong { color: var(--text-h); font-size: 18px; }
+.strength-plan-rest p { margin: 4px 0 0; }
 .strength-alternative { margin-bottom: 20px; padding: 12px 16px; border: 1px solid var(--border); border-radius: 9px; background: var(--surface); }
 .strength-alternative summary, .strength-guide summary { color: var(--text-h); font-weight: 700; cursor: pointer; }
 .strength-alternative p { margin-bottom: 0; }
@@ -1128,14 +1139,19 @@
   .readiness-card > div { grid-template-columns: 1fr 1fr; }
   .decision-actions { margin-left: 0; }
   .strength-hero, .strength-education-grid { grid-template-columns: 1fr; }
-  .strength-schedule { grid-template-columns: 1fr 1fr; }
+  .strength-plan-overview > header { display: grid; align-items: start; }
+  .strength-plan-overview__grid { grid-template-columns: 1fr; }
+  .strength-plan-overview__grid summary { grid-template-columns: 62px 1fr; }
+  .strength-plan-overview__grid summary small { grid-column: 2; }
   .strength-week-heading, .optional-strength-section > header { display: grid; align-items: start; }
   .strength-exercise__history, .strength-exercise__inputs, .strength-check-in { grid-template-columns: 1fr 1fr; }
   .strength-check-in__notes { grid-column: 1 / -1; }
 }
 
 @media (max-width: 420px) {
-  .strength-schedule, .strength-exercise__inputs, .strength-check-in { grid-template-columns: 1fr; }
+  .strength-exercise__inputs, .strength-check-in { grid-template-columns: 1fr; }
+  .strength-plan-overview__grid li > div { display: grid; gap: 1px; }
+  .strength-plan-overview__grid li > div > span { white-space: normal; }
   .strength-check-in__notes { grid-column: auto; }
 }
 

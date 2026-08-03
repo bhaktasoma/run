@@ -6,6 +6,7 @@ import type { StrengthAdjustmentDecision, StrengthRecoveryMode, StrengthSessionL
 import type { TrainingStore } from "../domain/training.ts";
 import { trainingDateIso } from "../utils/trainingDate.ts";
 import StrengthSessionCard from "./StrengthSessionCard.tsx";
+import ExerciseReference from "./ExerciseReference.tsx";
 
 interface WorkoutPlanPageProps {
   store: TrainingStore;
@@ -40,7 +41,14 @@ export default function WorkoutPlanPage({ store, onSaveLog, onSaveDecision, onSe
   return <main className="strength-page">
     <header className="strength-hero"><div><p className="goal-page__eyebrow">Running performance + lean muscle</p><h1>Strength</h1><p>Two balanced full-body sessions support durability, visible lean muscle, back and abdominal development, and healthy aging without compromising key runs.</p></div><aside><span>Next scheduled</span><strong>{nextSession ? `${nextSession.day} · ${nextSession.title}` : "Recovery first"}</strong><small>{nextSession?.duration ?? "Resume when normal walking and daily movement feel comfortable."}</small></aside></header>
 
-    <section className="strength-schedule" aria-label="Weekly strength placement"><div><strong>Monday</strong><span>Full Body A after easy running or alone</span></div><div><strong>Thursday</strong><span>Full Body B after easy/recovery running</span></div><div><strong>Friday</strong><span>Complete rest before the long run</span></div><div className="is-optional"><strong>Sunday</strong><span>Optional Upper / Aesthetic when recovery is good</span></div></section>
+    <section className="strength-plan-overview" aria-labelledby="weekly-strength-title">
+      <header><div><p className="goal-page__eyebrow">Standard weekly schedule</p><h2 id="weekly-strength-title">Detailed strength plan</h2></div><p>{suggestedMode === "post-race" ? "Reference only during post-race recovery. Resume progressively when normal walking and daily movement are comfortable." : "Use the recovery adjustment below when it differs from this standard plan."}</p></header>
+      <div className="strength-plan-overview__grid">
+        {strengthSessions.slice(0, 2).map((session) => <details open key={session.id}><summary><span>{session.day}</span><strong>{session.title}</strong><small>{session.duration} · Required</small></summary><ol>{session.exercises.map((exercise) => <li key={exercise.id}><div><strong>{exercise.name}</strong><span>{exercise.sets} × {exercise.minReps}–{exercise.maxReps}{exercise.repLabel ? ` ${exercise.repLabel}` : ""}</span></div><ExerciseReference exercise={exercise.name} /></li>)}</ol></details>)}
+        <article className="strength-plan-rest"><span>Friday</span><strong>Complete rest</strong><p>No strength training. Protect recovery and freshness for Saturday’s long run.</p></article>
+        <details open className="is-optional"><summary><span>Sunday</span><strong>Upper / Aesthetic</strong><small>25–35 min · Optional</small></summary><ol>{[...strengthSessions[2].exercises, selectedAb].map((exercise) => <li key={exercise.id}><div><strong>{exercise.name}</strong><span>{exercise.sets} × {exercise.minReps}–{exercise.maxReps}{exercise.repLabel ? ` ${exercise.repLabel}` : ""}</span></div><ExerciseReference exercise={exercise.name} /></li>)}</ol><p>Choose only one abdominal exercise. Current selection: <strong>{selectedAb.name}</strong>.</p></details>
+      </div>
+    </section>
     <details className="strength-alternative"><summary>Alternative when Monday strength affects Tuesday quality</summary><p>Move Full Body A to Tuesday after the quality run, separated by several hours when practical. Keep Full Body B on Thursday and the optional aesthetic session on Sunday.</p></details>
 
     <section className="strength-adjustment">
