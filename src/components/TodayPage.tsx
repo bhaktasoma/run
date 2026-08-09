@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import activePlan from "../data/activePlan.ts";
 import { completedMileage, entriesForWeek, recommendWeek } from "../domain/progression.ts";
-import type { RunEntry, TrainingStore } from "../domain/training.ts";
+import type { RoutineCompletion, RunEntry, TrainingStore } from "../domain/training.ts";
 import QuickLogForm from "./QuickLogForm.tsx";
 import { daysBetweenIsoDates, trainingDateIso } from "../utils/trainingDate.ts";
 import { montereyTarget } from "../data/races.ts";
+import { qualityStrides, runCooldown, runWarmup } from "../data/routines.ts";
+import RoutineChecklist from "./RoutineChecklist.tsx";
 
 interface TodayPageProps {
   store: TrainingStore;
@@ -12,9 +14,10 @@ interface TodayPageProps {
   onOpenStrength?: () => void;
   focusLog?: boolean;
   onLogFocused?: () => void;
+  onSaveRoutine: (completion: RoutineCompletion) => void;
 }
 
-export default function TodayPage({ store, onSaveEntry, onOpenStrength, focusLog = false, onLogFocused }: TodayPageProps) {
+export default function TodayPage({ store, onSaveEntry, onOpenStrength, focusLog = false, onLogFocused, onSaveRoutine }: TodayPageProps) {
   const [showPastRun, setShowPastRun] = useState(false);
   const [pastEntry, setPastEntry] = useState<RunEntry>();
   const today = trainingDateIso();
@@ -35,6 +38,8 @@ export default function TodayPage({ store, onSaveEntry, onOpenStrength, focusLog
   const existing = store.entries.find((entry) => entry.workoutId === todayWorkout.id);
   const logHeadingRef = useRef<HTMLHeadingElement>(null);
   const runWorkout = { ...todayWorkout, title: runTitle, targetRpe: todayWorkout.targetRpe.split(";")[0], steps: todayWorkout.steps?.filter((step) => !/Full Body/i.test(step)) };
+  const saveRoutine = (type: RoutineCompletion["type"], status: RoutineCompletion["status"]) => onSaveRoutine({ id: `${todayWorkout.id}-${type}`, workoutId: todayWorkout.id, date: todayWorkout.date, type, status });
+  const routineStatus = (type: RoutineCompletion["type"]) => store.routineCompletions.find((item) => item.workoutId === todayWorkout.id && item.type === type)?.status;
   useEffect(() => { if (!focusLog) return; logHeadingRef.current?.scrollIntoView({ block: "start" }); logHeadingRef.current?.focus({ preventScroll: true }); onLogFocused?.(); }, [focusLog, onLogFocused]);
 
   return (
@@ -49,6 +54,8 @@ export default function TodayPage({ store, onSaveEntry, onOpenStrength, focusLog
         <article className="focus-card"><p className="metric-label">Next long run</p><strong>{nextLongRun ? `${nextLongRun.plannedMiles} miles` : "Not scheduled"}</strong><span>{nextLongRun?.date ?? "—"} · RPE 3–4</span></article>
         <article className="focus-card"><p className="metric-label">Provisional race target</p><strong>{countdown} days · provisional</strong><span>{montereyTarget.title} · {montereyTarget.confirmation}</span></article>
       </section>
+
+      {(todayWorkout.kind === "run" || todayWorkout.kind === "benchmark") && <section className="today-routines" aria-label="Before and after this run"><RoutineChecklist routine={runWarmup} extraStep={todayWorkout.quality ? qualityStrides : undefined} status={routineStatus("run-warmup")} onStatus={(status) => saveRoutine("run-warmup", status)} collapsible /><RoutineChecklist routine={runCooldown} status={routineStatus("run-cooldown")} onStatus={(status) => saveRoutine("run-cooldown", status)} collapsible /><p>These routine records are separate from run and strength completion.</p></section>}
 
       <section className="recommendation-card" aria-live="polite">
         <div><p className="metric-label">Weekly recommendation</p><h2>{recommendation.summary}</h2></div>

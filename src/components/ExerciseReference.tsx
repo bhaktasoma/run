@@ -1,3 +1,5 @@
+import { exerciseVideoLabel, exerciseVideoUrl, SAFE_EXTERNAL_LINK_PROPS } from "../data/routines.ts";
+
 interface ExerciseReferenceProps {
   exercise: string;
   label?: string;
@@ -32,8 +34,7 @@ const cues: Record<Pattern, string[]> = {
 
 export default function ExerciseReference({ exercise, label, prescription, row = false }: ExerciseReferenceProps) {
   const pattern = getPattern(exercise);
-  const searchName = exercise.replace(/\s*\(.*\)$/, "");
-  const videoUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(`${searchName} proper form tutorial`)}`;
+  const videoUrl = exerciseVideoUrl(exercise);
 
   const referenceContent = <>
     <div className="exercise-reference__content">
@@ -42,9 +43,9 @@ export default function ExerciseReference({ exercise, label, prescription, row =
         <ul>
           {cues[pattern].map((cue) => <li key={cue}>{cue}</li>)}
         </ul>
-        <a className="exercise-reference__video" href={videoUrl} target="_blank" rel="noreferrer">
+        <a className="exercise-reference__video" href={videoUrl} {...SAFE_EXTERNAL_LINK_PROPS} aria-label={exerciseVideoLabel(exercise)}>
           <span aria-hidden="true">▶</span>
-          Watch demonstration
+          View demonstration <span aria-hidden="true">↗</span>
         </a>
       </div>
     </div>

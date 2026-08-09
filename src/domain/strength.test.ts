@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import plans from "../data/plans/index.ts";
 import { strengthSessions } from "../data/workoutPlan.ts";
-import { adaptStrengthPlan, nextStrengthTarget, STRENGTH_PROGRESSION_RULE } from "./strength.ts";
+import { adaptStrengthPlan, moveStrengthStage, nextStrengthTarget, shortenedSundaySession, STRENGTH_PROGRESSION_RULE, sundayStrengthState } from "./strength.ts";
 
 const squat = strengthSessions[0].exercises[0];
 
@@ -67,17 +67,33 @@ test("full-body sessions provide the intended balanced movement coverage", () =>
   }
 });
 
-test("optional core and back routine is short, limited, and recovery-dependent", () => {
+test("Sunday session has normal, shortened, and suppressed recovery states", () => {
   const optional = strengthSessions.find((session) => !session.required)!;
-  assert.equal(optional.title, "Optional Core / Back");
-  assert.equal(optional.duration, "15 min");
-  assert.equal(optional.exercises.length, 5);
+  assert.equal(optional.title, "Optional Back + Core + Aesthetics");
+  assert.equal(optional.duration, "30–40 min");
+  assert.equal(optional.exercises.length, 8);
+  const shortened = shortenedSundaySession(optional);
+  assert.equal(shortened.duration, "15–20 min");
+  assert.equal(shortened.exercises.length, 5);
+  assert.equal(sundayStrengthState("normal", "good", "within-48h"), "recovered");
+  assert.equal(sundayStrengthState("normal", "mixed", "within-48h"), "shortened");
+  assert.equal(sundayStrengthState("normal", "good", "slower"), "shortened");
+  assert.equal(sundayStrengthState("normal", "poor", "within-48h"), "suppressed");
   assert.ok(adaptStrengthPlan(strengthSessions, "normal").sessions.some((session) => session.id === optional.id));
   for (const mode of ["post-race", "running-recovery", "high-fatigue", "race-week", "marathon-peak"] as const) {
     const adapted = adaptStrengthPlan(strengthSessions, mode);
     assert.ok(!adapted.sessions.some((session) => session.id === optional.id), `${mode} should suppress the optional routine`);
     assert.ok(adapted.suppressedSessionIds.includes(optional.id));
   }
+});
+
+test("guided strength stages support next, previous, and bounded skipping", () => {
+  assert.equal(moveStrengthStage("idle", "next"), "warmup");
+  assert.equal(moveStrengthStage("warmup", "next"), "workout");
+  assert.equal(moveStrengthStage("workout", "next"), "cooldown");
+  assert.equal(moveStrengthStage("cooldown", "next"), "log");
+  assert.equal(moveStrengthStage("cooldown", "previous"), "workout");
+  assert.equal(moveStrengthStage("log", "next"), "log");
 });
 
 test("published progression rule requires good form before the smallest load increase", () => {

@@ -441,6 +441,35 @@
   margin-top: 20px;
 }
 
+.today-routines { display: grid; gap: 12px; margin: 24px 0; }
+.routine-checklist { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); overflow: hidden; }
+.routine-checklist > summary, .routine-checklist > header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 18px; cursor: pointer; }
+.routine-checklist > summary span { display: grid; gap: 2px; }
+.routine-checklist__body { padding: 0 18px 18px; }
+.routine-checklist__body ol { display: grid; gap: 8px; padding: 0; list-style: none; }
+.routine-checklist__body li { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.routine-checklist__body li > label { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.routine-checklist__body li > label span { display: grid; }
+.routine-checklist__body input[type="checkbox"] { width: 20px; height: 20px; flex: 0 0 auto; }
+.routine-checklist__tools, .routine-checklist__actions, .session-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.routine-checklist__actions { margin-top: 16px; }
+.routine-checklist__actions button, .routine-timer, .session-controls button, .session-paused button { min-height: 40px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text-h); }
+.strength-session-start { padding: 20px; }
+.session-stage-indicator { padding: 16px 20px 0; }
+.session-stage-indicator ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 0; list-style: none; counter-reset: stages; }
+.session-stage-indicator li { padding: 10px; border-bottom: 3px solid var(--border); color: var(--text); font-size: 12px; }
+.session-stage-indicator li[aria-current="step"] { border-color: var(--accent); color: var(--text-h); font-weight: 700; }
+.session-controls { padding: 16px 20px 20px; border-top: 1px solid var(--border); }
+.session-paused { padding: 28px 20px; text-align: center; }
+.sunday-readiness { display: grid; gap: 10px; margin: 16px 0; padding: 18px; border: 1px solid var(--border); border-radius: 12px; }
+.sunday-readiness label { display: flex; align-items: flex-start; gap: 10px; }
+
+@media (max-width: 600px) {
+  .routine-checklist__body li { align-items: flex-start; flex-direction: column; }
+  .routine-checklist__tools { padding-left: 30px; }
+  .session-stage-indicator ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 .goal-card__number {
   display: inline-grid;
   width: 36px;

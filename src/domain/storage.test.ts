@@ -23,6 +23,21 @@ test("version two storage safely migrates strength defaults", () => {
   assert.equal(migrated.version, 4);
   assert.deepEqual(migrated.strengthLogs, []);
   assert.equal(migrated.selectedAbExercise, "cable-crunch");
+  assert.deepEqual(migrated.routineCompletions, []);
+});
+
+test("run routines, strength stages, and mobility remain separate completion records", () => {
+  const values = new Map<string, string>();
+  const storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => values.set(key, value) };
+  const store = emptyTrainingStore();
+  store.routineCompletions.push({ id: "run-warmup", workoutId: "run-1", date: "2026-08-09", type: "run-warmup", status: "completed" }, { id: "mobility", workoutId: "mobility", date: "2026-08-09", type: "mobility", status: "completed" });
+  store.strengthLogs.push({ id: "strength-1", weekId: "week-1", sessionId: "full-body-a", date: "2026-08-09", status: "completed", difficulty: "appropriate", concerningPain: false, techniqueStable: true, notes: "", exercises: [], warmupStatus: "skipped", cooldownStatus: "completed" });
+  saveTrainingStore(store, storage);
+  const restored = loadTrainingStore(storage);
+  assert.equal(restored.entries.length, 0);
+  assert.equal(restored.routineCompletions.length, 2);
+  assert.equal(restored.strengthLogs[0].warmupStatus, "skipped");
+  assert.equal(restored.strengthLogs[0].cooldownStatus, "completed");
 });
 
 test("version three entries migrate activity and audit dates without losing IDs", () => {

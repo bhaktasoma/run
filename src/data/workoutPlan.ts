@@ -30,13 +30,16 @@ export const strengthSessions: StrengthSession[] = [
     ],
   },
   {
-    id: "aesthetic", title: "Optional Core / Back", day: "Sunday", duration: "15 min", required: false,
+    id: "aesthetic", title: "Optional Back + Core + Aesthetics", day: "Sunday", duration: "30–40 min", required: false,
     exercises: [
-      exercise("optional-row", "Cable or band row", 2, 10, 15),
-      exercise("reverse-crunch", "Reverse crunch", 2, 10, 15, { core: true }),
-      exercise("cable-crunch", "Cable crunch or controlled curl-up", 2, 10, 15, { core: true }),
-      exercise("bird-dog", "Side plank or bird dog", 2, 20, 30, { core: true, repLabel: "seconds per side" }),
+      exercise("sunday-pulldown", "Lat pulldown", 3, 8, 12),
+      exercise("sunday-row", "Chest-supported or cable row", 3, 8, 12),
+      exercise("incline-press", "Incline dumbbell press", 2, 8, 12),
+      exercise("face-pull", "Face pull or rear-delt fly", 2, 12, 15),
+      exercise("lateral-raise", "Lateral raise", 2, 10, 15),
       exercise("optional-suitcase", "Suitcase carry", 2, 30, 45, { core: true, repLabel: "seconds per side" }),
+      exercise("reverse-crunch", "Reverse crunch", 2, 8, 15, { core: true }),
+      exercise("sunday-side-plank", "Side plank", 2, 20, 40, { core: true, repLabel: "seconds per side" }),
     ],
   },
 ];

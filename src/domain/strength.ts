@@ -44,6 +44,8 @@ export interface StrengthSessionLog {
   techniqueStable: boolean;
   notes: string;
   exercises: StrengthExerciseLog[];
+  warmupStatus?: "completed" | "skipped";
+  cooldownStatus?: "completed" | "skipped";
 }
 
 export interface StrengthTarget {
@@ -68,6 +70,15 @@ export interface AdaptedStrengthPlan {
   suppressedSessionIds: StrengthSessionId[];
 }
 
+export type SundayStrengthState = "recovered" | "shortened" | "suppressed";
+export type StrengthSessionStage = "idle" | "warmup" | "workout" | "cooldown" | "log";
+const STRENGTH_STAGE_ORDER: StrengthSessionStage[] = ["idle", "warmup", "workout", "cooldown", "log"];
+
+export function moveStrengthStage(stage: StrengthSessionStage, direction: "next" | "previous"): StrengthSessionStage {
+  const index = STRENGTH_STAGE_ORDER.indexOf(stage);
+  return STRENGTH_STAGE_ORDER[Math.max(0, Math.min(STRENGTH_STAGE_ORDER.length - 1, index + (direction === "next" ? 1 : -1)))];
+}
+
 export const STRENGTH_THRESHOLDS = {
   targetRir: 2,
   startingRir: 3,
@@ -79,6 +90,17 @@ export const STRENGTH_THRESHOLDS = {
 export const STRENGTH_PROGRESSION_RULE = "Reach the top of the repetition range with good form before increasing the weight by the smallest available amount.";
 
 export const BODY_RECOMPOSITION_GOAL = "Build an athletic, lean physique with stronger glutes, thighs, back and core while protecting running performance, recovery and long-term health. Visible abdominal definition is an optional aesthetic outcome, not a requirement for successful training.";
+
+export function sundayStrengthState(mode: StrengthRecoveryMode, recovery?: "good" | "mixed" | "poor", longRunRecovery?: "within-48h" | "slower" | "not-applicable"): SundayStrengthState {
+  if (mode !== "normal" || recovery === "poor") return "suppressed";
+  if (recovery === "mixed" || longRunRecovery === "slower") return "shortened";
+  return "recovered";
+}
+
+export function shortenedSundaySession(session: StrengthSession): StrengthSession {
+  const ids = new Set(["sunday-pulldown", "incline-press", "optional-suitcase", "reverse-crunch", "sunday-side-plank"]);
+  return { ...session, title: "Shortened Back + Core", duration: "15–20 min", exercises: session.exercises.filter((exercise) => ids.has(exercise.id)).map((exercise) => ({ ...exercise, sets: 2 })) };
+}
 
 export function nextStrengthTarget(exercise: StrengthExercise, performance?: StrengthExerciseLog, techniqueStable = true): StrengthTarget {
   if (!performance || performance.status === "skipped") return { action: "hold", weight: performance?.weight ?? 0, reps: exercise.minReps, explanation: "No completed performance to justify an increase. Start or repeat the bottom of the range with 2–3 reps in reserve." };
@@ -108,7 +130,7 @@ export function adaptStrengthPlan(sessions: StrengthSession[], mode: StrengthRec
   }
   if (mode === "running-recovery") return { mode, title: "Running recovery week", explanation: "Remove one set from each lower-body exercise while keeping recoverable upper-body and back work. The optional Core / Back routine is suppressed until normal recovery resumes.", sessions: sessions.filter((session) => session.required).map((session) => ({ ...withSets(session, (exercise) => exercise.sets - (exercise.lowerBody ? STRENGTH_THRESHOLDS.recoveryLowerBodySetReduction : 0)), duration: "30–40 min" })), suppressedSessionIds: ["aesthetic"] };
   if (mode === "marathon-peak") return { mode, title: "Marathon-peak adjustment", explanation: "Keep useful resistance intensity while reducing lower-body volume by about one-third. The optional routine is suppressed so running quality and recovery remain primary.", sessions: sessions.filter((session) => session.required).map((session) => withSets(session, (exercise) => exercise.lowerBody ? Math.round(exercise.sets * STRENGTH_THRESHOLDS.marathonPeakLowerBodySetMultiplier) : exercise.sets)), suppressedSessionIds: ["aesthetic"] };
-  return { mode, title: "Normal strength week", explanation: "Use both required full-body sessions. Add the optional 15-minute Core / Back routine no more than once, only when recovery is good and running quality is stable.", sessions, suppressedSessionIds: [] };
+  return { mode, title: "Normal strength week", explanation: "Use both required full-body sessions. Sunday Back + Core + Aesthetics is optional and changes with recovery after Saturday’s long run; never make up missed strength later.", sessions, suppressedSessionIds: [] };
 }
 
 export function strengthSessionRecommendation(log: StrengthSessionLog) {

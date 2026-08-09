@@ -90,6 +90,15 @@ export interface RecommendationDecision {
   decidedAt: string;
 }
 
+export type RoutineStatus = "completed" | "skipped";
+export interface RoutineCompletion {
+  id: string;
+  workoutId: string;
+  date: string;
+  type: "run-warmup" | "run-cooldown" | "mobility";
+  status: RoutineStatus;
+}
+
 export interface TrainingStore {
   version: 4;
   entries: RunEntry[];
@@ -101,4 +110,5 @@ export interface TrainingStore {
   strengthLogs: import("./strength.ts").StrengthSessionLog[];
   strengthDecisions: import("./strength.ts").StrengthAdjustmentDecision[];
   selectedAbExercise: "cable-crunch" | "hanging-knee-raise" | "reverse-crunch";
+  routineCompletions: RoutineCompletion[];
 }

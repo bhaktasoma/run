@@ -14,6 +14,7 @@ export const emptyTrainingStore = (): TrainingStore => ({
   strengthLogs: [],
   strengthDecisions: [],
   selectedAbExercise: "cable-crunch",
+  routineCompletions: [],
 });
 
 interface LegacyRunEntry {

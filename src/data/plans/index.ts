@@ -8,7 +8,7 @@ import { alignRoadmapWithActivePlan } from "../roadmapAlignment.ts";
 
 const alignStrengthSchedule = (plan: Plan): Plan => ({
   ...plan,
-  priorities: plan.priorities ? [...plan.priorities.filter((priority) => !/upper.body|leg day|strength session|core|mobility/i.test(priority)), "Two required full-body strength sessions; optional aesthetic work only when recovery is good"] : plan.priorities,
+  priorities: plan.priorities ? [...plan.priorities.filter((priority) => !/upper.body|leg day|strength session|core|mobility/i.test(priority)), "Two primary full-body sessions; optional Sunday Back + Core + Aesthetics only when recovery permits"] : plan.priorities,
   afterWeeks: plan.afterWeeks?.filter((section) => !/strength schedule|strength:|core \+ mobility/i.test(section.title ?? "")),
   weeks: plan.weeks.map((week, weekIndex) => {
     const postRace = week.note?.toLowerCase().includes("post-race") || (plan.id === "2027-11" && weekIndex === 2) || (plan.id === "2028-10" && weekIndex === 1);
@@ -28,7 +28,7 @@ const alignStrengthSchedule = (plan: Plan): Plan => ({
         if (day.day === "Monday") return { ...day, strength: sessionA, core: "Included", mobility: "Short contextual warm-up" };
         if (day.day === "Thursday") return { ...day, strength: sessionB, core: "Included", mobility: "Short contextual warm-up" };
         if (day.day === "Friday") return { ...day, strength: "—", core: "—", mobility: "Complete rest" };
-        if (day.day === "Sunday") return { ...day, strength: marathonPeak ? "Optional session suppressed during marathon peak" : "Optional 15-minute Core / Back, once weekly when recovered", core: "Included in optional routine", mobility: "Optional if stiff" };
+        if (day.day === "Sunday") return { ...day, strength: marathonPeak ? "Optional session suppressed during marathon peak" : "Optional Back + Core + Aesthetics, recovery-dependent", core: "Included in optional routine", mobility: "8–10 min when strength is suppressed or stiffness improves with movement" };
         return { ...day, strength: "—", core: "—", mobility: day.run.toLowerCase().includes("rest") ? "Optional if stiff" : "3–7 min contextual warm-up" };
       }),
     };

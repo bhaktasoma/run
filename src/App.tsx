@@ -36,13 +36,13 @@ export default function App() {
       <details className="app__more" ref={moreMenuRef}><summary className="app__nav-btn">More</summary><div><button type="button" className={page.kind === "roadmap" ? "is-active" : ""} onClick={() => navigateFromMore("roadmap")}>Roadmap</button><button type="button" className={page.kind === "goal" ? "is-active" : ""} onClick={() => navigateFromMore("goal")}>Goal</button><button type="button" className={page.kind === "log" ? "is-active" : ""} onClick={() => navigateFromMore("log")}>Run History &amp; Backup</button><button type="button" className={page.kind === "guides" ? "is-active" : ""} onClick={() => navigateFromMore("guides")}>Guides</button><button type="button" onClick={() => { closeMore(); setShowOnboarding(true); }}>How this plan works</button></div></details>
     </nav>
     {showOnboarding && <PlanOnboarding onDismiss={dismissOnboarding} />}
-    {page.kind === "today" ? <TodayPage store={training.store} onSaveEntry={training.upsertEntry} onOpenStrength={() => navigate("strength")} focusLog={focusTodayLog} onLogFocused={() => setFocusTodayLog(false)} />
+    {page.kind === "today" ? <TodayPage store={training.store} onSaveEntry={training.upsertEntry} onSaveRoutine={training.upsertRoutineCompletion} onOpenStrength={() => navigate("strength")} focusLog={focusTodayLog} onLogFocused={() => setFocusTodayLog(false)} />
       : page.kind === "current" ? <CurrentPlanPage store={training.store} onSaveCheckIn={training.upsertCheckIn} onSaveDecision={training.saveDecision} />
       : page.kind === "progress" ? <ProgressPage store={training.store} onAddBenchmark={training.addBenchmark} onSavePaceGuidance={training.savePaceGuidance} onLogRun={openTodayLog} />
       : page.kind === "log" ? <RunLogPage store={training.store} onSave={training.upsertEntry} onDelete={training.deleteEntry} onRestore={training.restoreStore} />
       : page.kind === "goal" ? <GoalPage />
       : page.kind === "guides" ? <RunningGuidesPage />
-      : page.kind === "strength" ? <WorkoutPlanPage store={training.store} onSaveLog={training.upsertStrengthLog} onSaveDecision={training.saveStrengthDecision} />
+      : page.kind === "strength" ? <WorkoutPlanPage store={training.store} onSaveLog={training.upsertStrengthLog} onSaveDecision={training.saveStrengthDecision} onSaveRoutine={training.upsertRoutineCompletion} />
       : <PlanPage plan={selectedPlan} plans={plans} onSelectPlan={(id) => setPage({ kind: "roadmap", id })} />}
   </div>;
 }

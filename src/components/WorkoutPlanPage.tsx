@@ -1,24 +1,28 @@
 import { useState } from "react";
 import activePlan from "../data/activePlan.ts";
 import { strengthSessions, warmupGuides } from "../data/workoutPlan.ts";
+import { kneeResilience, mobilityRoutine } from "../data/routines.ts";
 import { entriesForWeek, recommendWeek } from "../domain/progression.ts";
-import { adaptStrengthPlan, BODY_RECOMPOSITION_GOAL, STRENGTH_PROGRESSION_RULE, strengthSessionRecommendation } from "../domain/strength.ts";
-import type { StrengthAdjustmentDecision, StrengthRecoveryMode, StrengthSessionLog } from "../domain/strength.ts";
-import type { TrainingStore } from "../domain/training.ts";
+import { adaptStrengthPlan, BODY_RECOMPOSITION_GOAL, shortenedSundaySession, STRENGTH_PROGRESSION_RULE, strengthSessionRecommendation, sundayStrengthState } from "../domain/strength.ts";
+import type { StrengthAdjustmentDecision, StrengthRecoveryMode, StrengthSessionLog, SundayStrengthState } from "../domain/strength.ts";
+import type { RoutineCompletion, TrainingStore } from "../domain/training.ts";
 import { trainingDateIso } from "../utils/trainingDate.ts";
 import StrengthSessionCard from "./StrengthSessionCard.tsx";
 import ExerciseReference from "./ExerciseReference.tsx";
+import RoutineChecklist from "./RoutineChecklist.tsx";
 
 interface WorkoutPlanPageProps {
   store: TrainingStore;
   onSaveLog: (log: StrengthSessionLog) => void;
   onSaveDecision: (decision: StrengthAdjustmentDecision) => void;
+  onSaveRoutine: (completion: RoutineCompletion) => void;
 }
 
 const dayOrder: Record<string, number> = { Sunday: 0, Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4, Friday: 5, Saturday: 6 };
 
-export default function WorkoutPlanPage({ store, onSaveLog, onSaveDecision }: WorkoutPlanPageProps) {
+export default function WorkoutPlanPage({ store, onSaveLog, onSaveDecision, onSaveRoutine }: WorkoutPlanPageProps) {
   const [activeTab, setActiveTab] = useState<"plan" | "week" | "log" | "progress" | "guides">("plan");
+  const [sundayOverride, setSundayOverride] = useState<SundayStrengthState>();
   const today = trainingDateIso();
   const todayDate = new Date(`${today}T12:00:00Z`);
   const currentWeek = activePlan.find((week) => week.workouts.some((workout) => workout.date === today)) ?? activePlan.find((week) => week.workouts.some((workout) => workout.date > today)) ?? activePlan.at(-1)!;
@@ -32,7 +36,8 @@ export default function WorkoutPlanPage({ store, onSaveLog, onSaveDecision }: Wo
   const decision = store.strengthDecisions.find((item) => item.weekId === currentWeek.id);
   const effectiveMode = decision?.accepted === false ? "normal" : suggestedMode;
   const adapted = adaptStrengthPlan(strengthSessions, effectiveMode);
-  const sessions = adapted.sessions;
+  const sundayState = sundayOverride ?? sundayStrengthState(effectiveMode, checkIn?.sleepRecovery, checkIn?.longRunRecovery);
+  const sessions = adapted.sessions.flatMap((session) => session.id !== "aesthetic" ? [session] : sundayState === "suppressed" ? [] : [sundayState === "shortened" ? shortenedSundaySession(session) : session]);
   const todayRun = currentWeek.workouts.find((workout) => workout.date === today);
   const relevantWarmup = todayRun?.isLongRun || todayRun?.quality ? warmupGuides.qualityRun : todayRun?.kind === "run" || todayRun?.kind === "benchmark" ? warmupGuides.easyRun : warmupGuides.after;
   const currentDay = todayDate.getUTCDay();
@@ -47,12 +52,13 @@ export default function WorkoutPlanPage({ store, onSaveLog, onSaveDecision }: Wo
 
     {activeTab === "plan" && <section className="strength-plan-overview strength-tab-panel" id="weekly-strength" role="tabpanel" aria-labelledby="weekly-strength-title">
       <header><div><h2 id="weekly-strength-title">Detailed strength plan</h2><p>Open a day to view exercises, sets, and form guidance.</p></div>{suggestedMode === "post-race" && <small className="strength-plan-overview__status">Recovery week · Reference only</small>}</header>
-      <section className="strength-adjustment"><div><p className="goal-page__eyebrow">This week’s adaptation</p><h3>{adapted.title}</h3><p>{adapted.explanation}</p><small>{adapted.mode === "normal" ? "2 required sessions" : `Up to ${adapted.sessions.filter((session) => session.required).length} reduced sessions`} · {adapted.sessions.some((session) => !session.required) ? "Optional session available when recovered" : "Optional session suppressed this week"}</small></div></section>
+      <section className="strength-adjustment"><div><p className="goal-page__eyebrow">This week’s adaptation</p><h3>{adapted.title}</h3><p>{adapted.explanation}</p><small>{adapted.mode === "normal" ? "2 required sessions" : `Up to ${adapted.sessions.filter((session) => session.required).length} reduced sessions`} · {sessions.some((session) => !session.required) ? `Sunday ${sundayState === "shortened" ? "shortened" : "available when recovered"}` : "Optional session suppressed this week"}</small></div></section>
+      {effectiveMode === "normal" && <fieldset className="sunday-readiness"><legend>Sunday after the Saturday long run</legend><label><input type="radio" name="sunday-state" checked={sundayState === "recovered"} onChange={() => setSundayOverride("recovered")} /> Recovered · normal 30–40 min</label><label><input type="radio" name="sunday-state" checked={sundayState === "shortened"} onChange={() => setSundayOverride("shortened")} /> Somewhat tired · shortened 15–20 min</label><label><input type="radio" name="sunday-state" checked={sundayState === "suppressed"} onChange={() => setSundayOverride("suppressed")} /> Pain, unusual soreness, or heavy fatigue · mobility or rest</label></fieldset>}
       <details className="strength-alternative"><summary>Alternative when Monday strength affects Tuesday quality</summary><p>Move Full Body A to Tuesday after the quality run, separated by several hours when practical. Keep Full Body B on Thursday. Optional work remains recovery-dependent.</p></details>
       <div className="strength-plan-overview__grid">
         {sessions.filter((session) => session.required).map((session) => <details key={session.id}><summary><span>{session.day}</span><strong>{session.title}</strong><small>{session.duration} · {adapted.mode === "normal" ? "Required" : "Conditional reduced session"}</small></summary>{adapted.mode !== "normal" && <p>Complete only if your legs feel comfortable.</p>}<ol>{session.exercises.map((exercise) => <li key={exercise.id}><ExerciseReference exercise={exercise.name} label="View" row prescription={`${exercise.sets} × ${exercise.minReps}–${exercise.maxReps}${exercise.repLabel ? ` ${exercise.repLabel}` : ""}`} /></li>)}</ol></details>)}
         <article className="strength-plan-rest"><span>Friday</span><strong>Complete rest</strong><small>Recovery · Protect Saturday’s long run</small></article>
-        {sessions.some((session) => !session.required) ? <details className="is-optional"><summary><span>Sunday</span><strong>Optional Core / Back</strong><small>15 min · Optional · once per week</small></summary><ol>{sessions.find((session) => !session.required)!.exercises.map((exercise) => <li key={exercise.id}><ExerciseReference exercise={exercise.name} label="View" row prescription={`${exercise.sets} × ${exercise.minReps}–${exercise.maxReps}${exercise.repLabel ? ` ${exercise.repLabel}` : ""}`} /></li>)}</ol><p>Complete only when recovery is good and the routine will not compromise the next key run.</p></details> : <article className="strength-plan-rest"><span>Sunday</span><strong>Optional session suppressed this week</strong><small>Resume only after recovery criteria are satisfied.</small></article>}
+        {sessions.some((session) => !session.required) ? <details className="is-optional"><summary><span>Sunday</span><strong>{sessions.find((session) => !session.required)!.title}</strong><small>{sessions.find((session) => !session.required)!.duration} · Optional</small></summary><ol>{sessions.find((session) => !session.required)!.exercises.map((exercise) => <li key={exercise.id}><ExerciseReference exercise={exercise.name} label="View" row prescription={`${exercise.sets} × ${exercise.minReps}–${exercise.maxReps}${exercise.repLabel ? ` ${exercise.repLabel}` : ""}`} /></li>)}</ol><p>Complete only when recovery is good and the routine will not compromise the next key run.</p></details> : <article className="strength-plan-rest"><span>Sunday</span><strong>Optional session suppressed this week</strong><small>Choose mobility or complete rest. Never make up missed strength later.</small></article>}
       </div>
     </section>}
       {activeTab === "week" && <section className="strength-tab-panel" role="tabpanel"><header className="strength-tab-heading"><h2>This week</h2><p>Recovery-aware adjustments for the current running week.</p></header>
@@ -69,7 +75,7 @@ export default function WorkoutPlanPage({ store, onSaveLog, onSaveDecision }: Wo
     {sessions.length ? <>
       <header className="strength-tab-heading strength-log-heading" id="strength-logger"><h2>Log workouts</h2><p>Open a session, record your sets, and save when complete. Keep 2–3 good repetitions in reserve.</p></header>
       {sessions.filter((session) => session.required).map((session) => <StrengthSessionCard key={`${effectiveMode}-${session.id}`} session={session} weekId={currentWeek.id} previousLogs={store.strengthLogs} onSave={onSaveLog} defaultOpen={session.id === nextSession?.id} />)}
-      {sessions.some((session) => !session.required) && <section className="optional-strength-section"><header><div><p className="goal-page__eyebrow">Optional when recovered · once per week</p><h2>15-minute Core / Back Logger</h2></div></header>{sessions.filter((session) => !session.required).map((session) => <StrengthSessionCard key={`${effectiveMode}-${session.id}`} session={session} weekId={currentWeek.id} previousLogs={store.strengthLogs} onSave={onSaveLog} defaultOpen={session.id === nextSession?.id} />)}</section>}
+      {sessions.some((session) => !session.required) && <section className="optional-strength-section"><header><div><p className="goal-page__eyebrow">Optional when recovered · once per week</p><h2>Sunday guided session</h2></div></header>{sessions.filter((session) => !session.required).map((session) => <StrengthSessionCard key={`${effectiveMode}-${sundayState}-${session.id}`} session={session} weekId={currentWeek.id} previousLogs={store.strengthLogs} onSave={onSaveLog} defaultOpen={session.id === nextSession?.id} />)}</section>}
     </> : <section className="strength-rest-card"><h2>No heavy strength prescribed now</h2><p>{adapted.explanation}</p></section>}
     </section>}
 
@@ -83,6 +89,8 @@ export default function WorkoutPlanPage({ store, onSaveLog, onSaveDecision }: Wo
       <article className="strength-guide"><h2>Progress without training to failure</h2><p>{STRENGTH_PROGRESSION_RULE}</p><p>Finish most working sets with 2–3 good repetitions remaining. Hold the weight when form changes or recovery is poor.</p></article>
       <article className="strength-guide"><h2>Body recomposition, in perspective</h2><p>{BODY_RECOMPOSITION_GOAL}</p><p>Fat cannot be selectively lost from the hips or thighs. Strength training can develop the glutes, hips and thighs, while visible abs depend on abdominal development, overall body composition and individual genetics. The priority is recomposition and performance—not aggressive weight loss.</p></article>
       <article className="strength-guide"><h2>Fuel strength and running</h2><ul><li>A practical protein range at about 114 lb / 51.7 kg is 85–100 grams per day, spread across three or four meals.</li><li>Begin near maintenance intake rather than pursuing aggressive weight loss.</li><li>Fuel long runs, quality workouts and recovery adequately.</li><li>The app intentionally does not set daily calorie or weight-loss targets.</li></ul><p>Persistent fatigue, worsening performance, poor recovery, recurring injuries or menstrual changes are reasons to pause any fat-loss effort and discuss the symptoms with an appropriate healthcare or sports-nutrition professional.</p><p><small>General educational information—not individualized medical or dietary advice.</small></p></article>
+      <article className="strength-guide"><h2>{kneeResilience.title}</h2><p>Full Body A/B already cover split squats, hamstring curls, calf raises and step-ups. When useful, add a brief technique block with controlled step-downs, tibialis raises, lateral band walks and single-leg balance—never as automatic punishment for pain or missed work.</p><ul>{kneeResilience.patterns.map((pattern) => <li key={pattern}><ExerciseReference exercise={pattern} label="View" /></li>)}</ul><p><strong>{kneeResilience.safety}</strong></p></article>
+      <article className="strength-guide"><h2>Reusable mobility</h2><RoutineChecklist routine={mobilityRoutine} status={store.routineCompletions.find((item) => item.type === "mobility" && item.date === today)?.status} onStatus={(status) => onSaveRoutine({ id: `${today}-mobility`, workoutId: "mobility", date: today, type: "mobility", status })} /></article>
     </section>}
   </main>;
 }

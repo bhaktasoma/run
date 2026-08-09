@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { loadTrainingStore, saveTrainingStore } from "../domain/storage.ts";
-import type { BenchmarkEntry, RecommendationDecision, RunEntry, TrainingStore, WeeklyCheckIn } from "../domain/training.ts";
+import type { BenchmarkEntry, RecommendationDecision, RoutineCompletion, RunEntry, TrainingStore, WeeklyCheckIn } from "../domain/training.ts";
 import type { StrengthAdjustmentDecision, StrengthSessionLog } from "../domain/strength.ts";
 
 export default function useTrainingStore() {
@@ -34,6 +34,7 @@ export default function useTrainingStore() {
     strengthDecisions: [...current.strengthDecisions.filter((item) => item.weekId !== decision.weekId), decision],
   }));
   const selectAbExercise = (selectedAbExercise: TrainingStore["selectedAbExercise"]) => setStore((current) => ({ ...current, selectedAbExercise }));
+  const upsertRoutineCompletion = (completion: RoutineCompletion) => setStore((current) => ({ ...current, routineCompletions: [...current.routineCompletions.filter((item) => item.id !== completion.id), completion] }));
   const restoreStore = (restored: TrainingStore) => setStore(restored);
-  return { store, upsertEntry, deleteEntry, upsertCheckIn, addBenchmark, saveDecision, savePaceGuidance, upsertStrengthLog, saveStrengthDecision, selectAbExercise, restoreStore };
+  return { store, upsertEntry, deleteEntry, upsertCheckIn, addBenchmark, saveDecision, savePaceGuidance, upsertStrengthLog, saveStrengthDecision, selectAbExercise, upsertRoutineCompletion, restoreStore };
 }
