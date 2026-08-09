@@ -42,7 +42,7 @@ export default function App() {
       : page.kind === "log" ? <RunLogPage store={training.store} onSave={training.upsertEntry} onDelete={training.deleteEntry} onRestore={training.restoreStore} />
       : page.kind === "goal" ? <GoalPage />
       : page.kind === "guides" ? <RunningGuidesPage />
-      : page.kind === "strength" ? <WorkoutPlanPage store={training.store} onSaveLog={training.upsertStrengthLog} onSaveDecision={training.saveStrengthDecision} onSelectAb={training.selectAbExercise} />
+      : page.kind === "strength" ? <WorkoutPlanPage store={training.store} onSaveLog={training.upsertStrengthLog} onSaveDecision={training.saveStrengthDecision} />
       : <PlanPage plan={selectedPlan} plans={plans} onSelectPlan={(id) => setPage({ kind: "roadmap", id })} />}
   </div>;
 }

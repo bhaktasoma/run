@@ -2,16 +2,16 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import plans from "../data/plans/index.ts";
 import { strengthSessions } from "../data/workoutPlan.ts";
-import { adaptStrengthPlan, nextStrengthTarget } from "./strength.ts";
+import { adaptStrengthPlan, nextStrengthTarget, STRENGTH_PROGRESSION_RULE } from "./strength.ts";
 
 const squat = strengthSessions[0].exercises[0];
 
 test("double progression increases only after every set reaches the top with reserve", () => {
-  const increase = nextStrengthTarget(squat, { exerciseId: squat.id, weight: 60, reps: [7, 7, 7], rir: 2, status: "completed", note: "" }, true);
+  const increase = nextStrengthTarget(squat, { exerciseId: squat.id, weight: 60, reps: [10, 10, 10], rir: 2, status: "completed", note: "" }, true);
   assert.equal(increase.action, "increase");
   assert.equal(increase.weight, 65);
-  assert.equal(increase.reps, 5);
-  const incomplete = nextStrengthTarget(squat, { exerciseId: squat.id, weight: 60, reps: [7, 7, 6], rir: 2, status: "completed", note: "" }, true);
+  assert.equal(increase.reps, 6);
+  const incomplete = nextStrengthTarget(squat, { exerciseId: squat.id, weight: 60, reps: [10, 10, 9], rir: 2, status: "completed", note: "" }, true);
   assert.equal(incomplete.action, "hold");
   assert.equal(incomplete.weight, 60);
 });
@@ -57,6 +57,31 @@ test("poor recovery suppresses optional strength", () => {
   const adapted = adaptStrengthPlan(strengthSessions, "high-fatigue");
   assert.ok(adapted.suppressedSessionIds.includes("aesthetic"));
   assert.equal(adapted.sessions.length, 1);
+});
+
+test("full-body sessions provide the intended balanced movement coverage", () => {
+  assert.deepEqual(strengthSessions[0].exercises.map((exercise) => exercise.id), ["goblet-squat", "rdl", "split-squat", "standing-calf", "row-a", "db-press", "dead-bug", "pallof"]);
+  assert.deepEqual(strengthSessions[1].exercises.map((exercise) => exercise.id), ["step-up", "hip-thrust", "hamstring-curl", "single-leg-calf", "lat-pulldown", "shoulder-press", "side-plank", "suitcase-carry"]);
+  for (const session of strengthSessions.filter((item) => item.required)) {
+    assert.ok(session.exercises.every((exercise) => exercise.sets >= 2 && exercise.sets <= 3));
+  }
+});
+
+test("optional core and back routine is short, limited, and recovery-dependent", () => {
+  const optional = strengthSessions.find((session) => !session.required)!;
+  assert.equal(optional.title, "Optional Core / Back");
+  assert.equal(optional.duration, "15 min");
+  assert.equal(optional.exercises.length, 5);
+  assert.ok(adaptStrengthPlan(strengthSessions, "normal").sessions.some((session) => session.id === optional.id));
+  for (const mode of ["post-race", "running-recovery", "high-fatigue", "race-week", "marathon-peak"] as const) {
+    const adapted = adaptStrengthPlan(strengthSessions, mode);
+    assert.ok(!adapted.sessions.some((session) => session.id === optional.id), `${mode} should suppress the optional routine`);
+    assert.ok(adapted.suppressedSessionIds.includes(optional.id));
+  }
+});
+
+test("published progression rule requires good form before the smallest load increase", () => {
+  assert.equal(STRENGTH_PROGRESSION_RULE, "Reach the top of the repetition range with good form before increasing the weight by the smallest available amount.");
 });
 
 test("roadmap never places heavy lower-body strength on Friday before a Saturday long run", () => {

@@ -437,6 +437,10 @@
   background: var(--surface);
 }
 
+.goal-card--strength {
+  margin-top: 20px;
+}
+
 .goal-card__number {
   display: inline-grid;
   width: 36px;

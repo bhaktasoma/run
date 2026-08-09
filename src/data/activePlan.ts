@@ -54,7 +54,7 @@ const buildWeek = (blueprint: WeekBlueprint, index: number): ActiveWeek => {
     workout(dates[3], blueprint.strides ? "Easy run + strides + Full Body B" : "Recovery run + Full Body B", "run", thursday, blueprint.strides ? "Easy RPE 3; strides RPE 6–7; strength with 2–3 RIR" : "Run RPE 2–3; strength with 2–3 RIR", blueprint.strides ? "Add relaxed coordination and the second balanced strength session." : "Add easy volume and the second balanced strength session.", { paceGuidance: "Easy effort controls the pace", steps: blueprint.strides ? ["Complete the easy miles first", "Run 4 relaxed 20-second accelerations", "Walk or jog fully between strides", "Complete Full Body B afterward or later"] : ["Complete the recovery run", "Complete Full Body B afterward or later"] }),
     workout(dates[4], "Complete rest", "rest", 0, "RPE 1", "Protect freshness for Saturday’s long run."),
     workout(dates[5], "Long easy run", "run", saturday, "RPE 3–4", blueprint.longRunPurpose, { paceGuidance: easyPace, isLongRun: true, steps: ["Start slower than normal", `${saturday} miles at conversational effort`, "Walk breaks are welcome", "Stop if pain changes running form"] }),
-    workout(dates[6], "Rest or optional Upper / Aesthetic", "strength", 0, "RPE 1–2 or strength RPE 5–6", "Absorb the week; add the optional session only when recovery is good.", { duration: "Optional 25–35 min" }),
+    workout(dates[6], "Rest or optional Core / Back", "strength", 0, "RPE 1–2 or strength RPE 5–6", "Absorb the week; add the optional 15-minute routine no more than once and only when recovery is good.", { duration: "Optional 15 min" }),
   ];
 
   const end = dates[6];

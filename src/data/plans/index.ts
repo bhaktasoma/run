@@ -28,7 +28,7 @@ const alignStrengthSchedule = (plan: Plan): Plan => ({
         if (day.day === "Monday") return { ...day, strength: sessionA, core: "Included", mobility: "Short contextual warm-up" };
         if (day.day === "Thursday") return { ...day, strength: sessionB, core: "Included", mobility: "Short contextual warm-up" };
         if (day.day === "Friday") return { ...day, strength: "—", core: "—", mobility: "Complete rest" };
-        if (day.day === "Sunday") return { ...day, strength: marathonPeak ? "Optional session discouraged if recovery slips" : "Optional Upper / Aesthetic", core: "One optional ab exercise", mobility: "Optional if stiff" };
+        if (day.day === "Sunday") return { ...day, strength: marathonPeak ? "Optional session suppressed during marathon peak" : "Optional 15-minute Core / Back, once weekly when recovered", core: "Included in optional routine", mobility: "Optional if stiff" };
         return { ...day, strength: "—", core: "—", mobility: day.run.toLowerCase().includes("rest") ? "Optional if stiff" : "3–7 min contextual warm-up" };
       }),
     };
