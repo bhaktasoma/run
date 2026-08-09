@@ -1,5 +1,5 @@
 export type StrengthSessionId = "full-body-a" | "full-body-b" | "aesthetic";
-export type StrengthStatus = "completed" | "modified" | "skipped";
+export type StrengthStatus = "not-recorded" | "completed" | "partial" | "modified" | "skipped";
 export type StrengthDifficulty = "too-easy" | "appropriate" | "too-hard";
 export type StrengthRecoveryMode = "normal" | "running-recovery" | "high-fatigue" | "race-week" | "post-race" | "marathon-peak";
 
@@ -26,11 +26,25 @@ export interface StrengthSession {
 
 export interface StrengthExerciseLog {
   exerciseId: string;
+  variationId?: string;
+  measurementType?: StrengthMeasurementType;
   weight: number;
   reps: number[];
   rir: number;
   status: StrengthStatus;
   note: string;
+}
+
+export type StrengthMeasurementType = "external-load" | "bodyweight" | "assisted-bodyweight" | "band-resistance" | "repetitions" | "time" | "loaded-time" | "optional-load";
+export interface ExerciseVariation { id: string; label: string; measurement: StrengthMeasurementType; }
+
+export function exerciseVariations(exercise: StrengthExercise): ExerciseVariation[] {
+  const names = exercise.name.split(/\s+or\s+/i);
+  return names.map((label) => {
+    const lower = label.toLowerCase();
+    const measurement: StrengthMeasurementType = /carry/i.test(exercise.name) ? "loaded-time" : /plank/.test(lower) ? "time" : /push-up|dead bug|crunch/.test(lower) ? "bodyweight" : /assisted/.test(lower) ? "assisted-bodyweight" : /band|pallof/.test(lower) ? "band-resistance" : /glute bridge/.test(lower) ? "optional-load" : "external-load";
+    return { id: lower.replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""), label, measurement };
+  });
 }
 
 export interface StrengthSessionLog {
@@ -103,7 +117,7 @@ export function shortenedSundaySession(session: StrengthSession): StrengthSessio
 }
 
 export function nextStrengthTarget(exercise: StrengthExercise, performance?: StrengthExerciseLog, techniqueStable = true): StrengthTarget {
-  if (!performance || performance.status === "skipped") return { action: "hold", weight: performance?.weight ?? 0, reps: exercise.minReps, explanation: "No completed performance to justify an increase. Start or repeat the bottom of the range with 2–3 reps in reserve." };
+  if (!performance || performance.status === "skipped" || performance.status === "not-recorded") return { action: "hold", weight: performance?.weight ?? 0, reps: exercise.minReps, explanation: "No completed performance to justify an increase. Start or repeat the bottom of the range with 2–3 reps in reserve." };
   const repsComplete = performance.reps.length === exercise.sets;
   const allAtTop = repsComplete && performance.reps.every((reps) => reps >= exercise.maxReps);
   const belowMinimum = performance.reps.some((reps) => reps < exercise.minReps);

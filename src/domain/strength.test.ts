@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import plans from "../data/plans/index.ts";
 import { strengthSessions } from "../data/workoutPlan.ts";
-import { adaptStrengthPlan, moveStrengthStage, nextStrengthTarget, shortenedSundaySession, STRENGTH_PROGRESSION_RULE, sundayStrengthState } from "./strength.ts";
+import { adaptStrengthPlan, exerciseVariations, moveStrengthStage, nextStrengthTarget, shortenedSundaySession, STRENGTH_PROGRESSION_RULE, sundayStrengthState } from "./strength.ts";
 
 const squat = strengthSessions[0].exercises[0];
 
@@ -94,6 +94,15 @@ test("guided strength stages support next, previous, and bounded skipping", () =
   assert.equal(moveStrengthStage("cooldown", "next"), "log");
   assert.equal(moveStrengthStage("cooldown", "previous"), "workout");
   assert.equal(moveStrengthStage("log", "next"), "log");
+});
+
+test("exercise variations use appropriate and separate measurement identities", () => {
+  const press = strengthSessions[0].exercises.find((exercise) => exercise.id === "db-press")!;
+  assert.deepEqual(exerciseVariations(press).map((variation) => [variation.id, variation.measurement]), [["push-up", "bodyweight"], ["dumbbell-press", "external-load"]]);
+  const plank = strengthSessions[1].exercises.find((exercise) => exercise.id === "side-plank")!;
+  assert.equal(exerciseVariations(plank)[0].measurement, "time");
+  const carry = strengthSessions[1].exercises.find((exercise) => exercise.id === "suitcase-carry")!;
+  assert.ok(exerciseVariations(carry).every((variation) => variation.measurement === "loaded-time"));
 });
 
 test("published progression rule requires good form before the smallest load increase", () => {

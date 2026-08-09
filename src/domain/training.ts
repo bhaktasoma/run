@@ -54,6 +54,8 @@ export interface RunEntry {
   runWalkMethod: RunWalkMethod;
   runWalkPattern: string;
   conditions: string;
+  skipReason?: "schedule" | "fatigue" | "pain" | "illness" | "weather" | "other" | "";
+  substituteActivity?: string;
 }
 
 export interface WeeklyCheckIn {
@@ -100,7 +102,7 @@ export interface RoutineCompletion {
 }
 
 export interface TrainingStore {
-  version: 4;
+  version: 5;
   entries: RunEntry[];
   checkIns: WeeklyCheckIn[];
   benchmarks: BenchmarkEntry[];

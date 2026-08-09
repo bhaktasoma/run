@@ -4,6 +4,7 @@ import { benchmarkGuidance, entriesForWeek, parseDurationMinutes, recommendWeek 
 import type { BenchmarkEntry, TrainingStore } from "../domain/training.ts";
 import { trainingDateIso } from "../utils/trainingDate.ts";
 import ProgressGraphs from "./ProgressGraphs.tsx";
+import { resolveStrengthStatus } from "../domain/workoutStatus.ts";
 
 interface ProgressPageProps { store: TrainingStore; onAddBenchmark: (benchmark: BenchmarkEntry) => void; onSavePaceGuidance: (benchmarkId: string, text: string, accepted: boolean) => void; onLogRun: () => void; }
 
@@ -13,10 +14,13 @@ export default function ProgressPage({ store, onAddBenchmark, onSavePaceGuidance
   const [benchmark, setBenchmark] = useState(emptyBenchmark);
   const currentWeek = activePlan.find((week) => week.workouts.some((workout) => workout.date >= trainingDateIso())) ?? activePlan.at(-1)!;
   const recommendation = recommendWeek(currentWeek, entriesForWeek(currentWeek, store.entries), store.checkIns.find((item) => item.weekId === currentWeek.id), trainingDateIso());
+  const sundayWorkout = currentWeek.workouts.find((workout) => /Back \+ Core \+ Aesthetics/i.test(workout.title)) ?? currentWeek.workouts.at(-1)!;
+  const sundayStatus = resolveStrengthStatus("aesthetic", sundayWorkout.date, currentWeek, store);
   const painFlags = store.entries.filter((entry) => entry.pain !== "none");
   const strengthCompleted = store.strengthLogs.filter((entry) => entry.status === "completed").length;
+  const hasRecoveryData = store.entries.length > 0 || store.checkIns.length > 0;
   const readiness = {
-    consistency: store.entries.length >= 12 ? "On Track" : "Building",
+    consistency: store.entries.length === 0 ? "Not Yet Tested" : store.entries.length >= 12 ? "On Track" : "Building",
     durability: store.entries.some((entry) => /long/i.test(entry.workout) && Number(entry.actualDistance) >= 8) ? "Building" : "Not Yet Tested",
     goalPace: store.benchmarks.length >= 2 ? "Building" : "Not Yet Tested",
     recovery: painFlags.some((entry) => entry.pain === "concerning") ? "Needs Attention" : store.checkIns.length ? "On Track" : "Not Yet Tested",
@@ -31,11 +35,12 @@ export default function ProgressPage({ store, onAddBenchmark, onSavePaceGuidance
 
   return <main className="progress-page">
     <header className="section-hero"><p className="goal-page__eyebrow">Decision-useful trends</p><h1>Progress</h1><p>Use repeatable evidence to see what is building. No readiness percentage or automatic pace progression.</p></header>
-    <section className="recommendation-card"><span className={`recommendation-badge recommendation-badge--${recommendation.state.toLowerCase()}`}>{recommendation.state}</span><div><h2>{recommendation.summary}</h2><ul>{recommendation.reasons.map((reason) => <li key={reason}>{reason}</li>)}</ul></div></section>
+    <section className="recommendation-card"><span className={`recommendation-badge recommendation-badge--${hasRecoveryData ? recommendation.state.toLowerCase() : "hold"}`}>{hasRecoveryData ? recommendation.state : "Hold"}</span><div><h2>{hasRecoveryData ? recommendation.summary : "Insufficient data—hold"}</h2><ul>{hasRecoveryData ? recommendation.reasons.map((reason) => <li key={reason}>{reason}</li>) : <li>Log runs and complete weekly check-ins before drawing recovery or progression conclusions.</li>}</ul></div></section>
     {!store.entries.length && !store.benchmarks.length ? <section className="progress-onboarding"><h2>Your progress will appear here</h2><p>To build meaningful trends, log:</p><ul><li>3 comparable easy runs</li><li>2 long runs</li><li>2 completed training weeks</li><li>Comparable controlled benchmarks</li></ul><button className="run-log-form__save" type="button" onClick={onLogRun}>Log a run from Today</button></section> : <ProgressGraphs store={store} />}
     <section aria-labelledby="status-title"><p className="goal-page__eyebrow">Supporting signals</p><h2 id="status-title">Status</h2><div className="progress-status-grid">
-      <article><strong>Pain &amp; recovery</strong><span>{painFlags.length ? `${painFlags.length} pain flag${painFlags.length === 1 ? "" : "s"}` : "No pain flags recorded"}</span><small>{store.checkIns.length} weekly check-ins saved</small></article>
+      <article><strong>Pain &amp; recovery</strong><span>{!hasRecoveryData ? "No recovery data yet" : painFlags.length ? `${painFlags.length} pain flag${painFlags.length === 1 ? "" : "s"}` : "No pain flags in recorded data"}</span><small>{store.checkIns.length} weekly check-ins saved</small></article>
       <article><strong>Strength consistency</strong><span>{strengthCompleted} session{strengthCompleted === 1 ? "" : "s"} completed</span><small>Shown separately from running volume</small></article>
+      <article><strong>Sunday strength</strong><span>{sundayStatus.state}</span><small>{sundayStatus.availabilityReason}</small></article>
       <article><strong>Next benchmark</strong><span>Same familiar easy route</span><small>Repeat every 6–8 weeks at RPE 3–4</small></article>
       <article><strong>Data quality</strong><span>{store.entries.length} run log entr{store.entries.length === 1 ? "y" : "ies"}</span><small>Missing fields remain missing; they are never estimated</small></article>
     </div></section>

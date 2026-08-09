@@ -7,7 +7,7 @@ test("versioned storage migrates legacy logs and round-trips new data", () => {
   values.set("run-training-log-v1", JSON.stringify([{ id: "old-1", date: "2026-08-01", workout: "Long Run", actualDistance: "4", duration: "0:58:00", pain: "None" }]));
   const storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => values.set(key, value) };
   const migrated = loadTrainingStore(storage);
-  assert.equal(migrated.version, 4);
+  assert.equal(migrated.version, 5);
   assert.equal(migrated.entries[0].pain, "none");
   assert.equal(migrated.entries[0].activityDate, "2026-08-01");
   saveTrainingStore(migrated, storage);
@@ -20,10 +20,18 @@ test("version two storage safely migrates strength defaults", () => {
   values.set("soma-training-store-v2", JSON.stringify({ version: 2, entries: [], checkIns: [], benchmarks: [], decisions: [], roadmapCompletions: {} }));
   const storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => values.set(key, value) };
   const migrated = loadTrainingStore(storage);
-  assert.equal(migrated.version, 4);
+  assert.equal(migrated.version, 5);
   assert.deepEqual(migrated.strengthLogs, []);
   assert.equal(migrated.selectedAbExercise, "cable-crunch");
   assert.deepEqual(migrated.routineCompletions, []);
+});
+
+test("version four local data migrates to version five without losing history", () => {
+  const values = new Map<string, string>();
+  values.set("soma-training-store-v4", JSON.stringify({ ...emptyTrainingStore(), version: 4, entries: [] }));
+  const migrated = loadTrainingStore({ getItem: (key: string) => values.get(key) ?? null });
+  assert.equal(migrated.version, 5);
+  assert.deepEqual(migrated.entries, []);
 });
 
 test("run routines, strength stages, and mobility remain separate completion records", () => {
@@ -51,7 +59,7 @@ test("version three entries migrate activity and audit dates without losing IDs"
   assert.ok(migrated.entries[0].createdAt);
 });
 
-test("strength logs persist in version four storage", () => {
+test("strength logs persist in version five storage", () => {
   const values = new Map<string, string>();
   const storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => values.set(key, value) };
   const store = loadTrainingStore(storage);
@@ -62,7 +70,7 @@ test("strength logs persist in version four storage", () => {
   assert.equal(reloaded.strengthLogs[0].exercises[0].weight, 50);
 });
 
-test("version four round-trip preserves editable run fields", () => {
+test("version five round-trip preserves editable run fields", () => {
   const values = new Map<string, string>();
   const storage = { getItem: (key: string) => values.get(key) ?? null, setItem: (key: string, value: string) => values.set(key, value) };
   const store = loadTrainingStore(storage);

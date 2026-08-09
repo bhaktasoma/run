@@ -45,7 +45,7 @@ export default function ExerciseReference({ exercise, label, prescription, row =
         </ul>
         <a className="exercise-reference__video" href={videoUrl} {...SAFE_EXTERNAL_LINK_PROPS} aria-label={exerciseVideoLabel(exercise)}>
           <span aria-hidden="true">▶</span>
-          View demonstration <span aria-hidden="true">↗</span>
+          View YouTube examples <span aria-hidden="true">↗</span>
         </a>
       </div>
     </div>

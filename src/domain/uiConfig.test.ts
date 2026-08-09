@@ -32,6 +32,11 @@ test("new run outcomes cannot save before required fields are explicit", () => {
   assert.equal(runOutcomeIsSavable("skipped", "", false, ""), true);
 });
 
+test("substituted and skipped runs do not require invented run metrics", () => {
+  assert.equal(runOutcomeIsSavable("skipped", "", false, ""), true);
+  assert.equal(runOutcomeIsSavable("substituted", "", false, ""), true);
+});
+
 test("run logging removes combined strength names", () => {
   assert.equal(runOnlyTitle("Easy run + Full Body A"), "Easy run");
   assert.equal(runOnlyTitle("Recovery run + Full Body B"), "Recovery run");

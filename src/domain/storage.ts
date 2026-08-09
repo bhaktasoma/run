@@ -1,11 +1,12 @@
 import type { RunEntry, TrainingStore } from "./training.ts";
 
-export const TRAINING_STORAGE_KEY = "soma-training-store-v4";
+export const TRAINING_STORAGE_KEY = "soma-training-store-v5";
+const VERSION_FOUR_STORAGE_KEY = "soma-training-store-v4";
 const VERSION_THREE_STORAGE_KEY = "soma-training-store-v3";
 const PREVIOUS_TRAINING_STORAGE_KEY = "soma-training-store-v2";
 
 export const emptyTrainingStore = (): TrainingStore => ({
-  version: 4,
+  version: 5,
   entries: [],
   checkIns: [],
   benchmarks: [],
@@ -66,17 +67,22 @@ export function loadTrainingStore(storage: Pick<Storage, "getItem"> = localStora
     const stored = storage.getItem(TRAINING_STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored) as TrainingStore;
-      if (parsed.version === 4) return { ...emptyTrainingStore(), ...parsed, entries: parsed.entries.map(migrateEntry) };
+      if (parsed.version === 5) return { ...emptyTrainingStore(), ...parsed, entries: parsed.entries.map(migrateEntry) };
+    }
+    const versionFour = storage.getItem(VERSION_FOUR_STORAGE_KEY);
+    if (versionFour) {
+      const parsed = JSON.parse(versionFour) as { entries?: MigratableRunEntry[] } & Partial<TrainingStore>;
+      return { ...emptyTrainingStore(), ...parsed, version: 5, entries: (parsed.entries ?? []).map(migrateEntry) };
     }
     const versionThree = storage.getItem(VERSION_THREE_STORAGE_KEY);
     if (versionThree) {
       const parsed = JSON.parse(versionThree) as { entries?: MigratableRunEntry[] } & Partial<TrainingStore>;
-      return { ...emptyTrainingStore(), ...parsed, version: 4, entries: (parsed.entries ?? []).map(migrateEntry) };
+      return { ...emptyTrainingStore(), ...parsed, version: 5, entries: (parsed.entries ?? []).map(migrateEntry) };
     }
     const previous = storage.getItem(PREVIOUS_TRAINING_STORAGE_KEY);
     if (previous) {
       const parsed = JSON.parse(previous) as { entries?: MigratableRunEntry[] } & Partial<TrainingStore>;
-      return { ...emptyTrainingStore(), ...parsed, version: 4, entries: (parsed.entries ?? []).map(migrateEntry) };
+      return { ...emptyTrainingStore(), ...parsed, version: 5, entries: (parsed.entries ?? []).map(migrateEntry) };
     }
     const legacy = JSON.parse(storage.getItem("run-training-log-v1") ?? "[]") as LegacyRunEntry[];
     return { ...emptyTrainingStore(), entries: legacy.map(migrateEntry) };
@@ -104,6 +110,7 @@ export function previewTrainingBackup(text: string): BackupPreview {
   if (!candidate.entries!.every((entry) => entry && typeof entry === "object" && typeof entry.id === "string" && typeof entry.activityDate === "string" && typeof entry.status === "string")) throw new Error("The backup contains an invalid run entry.");
   if (!candidate.benchmarks!.every((entry) => entry && typeof entry === "object" && typeof entry.id === "string" && typeof entry.date === "string")) throw new Error("The backup contains an invalid benchmark.");
   if (!candidate.strengthLogs!.every((entry) => entry && typeof entry === "object" && typeof entry.id === "string" && Array.isArray(entry.exercises))) throw new Error("The backup contains an invalid strength log.");
-  const store: TrainingStore = { ...emptyTrainingStore(), ...candidate, version: 4 };
+  if (candidate.version !== undefined && ![4, 5].includes(Number(candidate.version))) throw new Error("This backup version is not supported.");
+  const store: TrainingStore = { ...emptyTrainingStore(), ...candidate, version: 5 };
   return { store, counts: { runs: store.entries.length, checkIns: store.checkIns.length, benchmarks: store.benchmarks.length, strength: store.strengthLogs.length, decisions: store.decisions.length + store.strengthDecisions.length } };
 }

@@ -13,8 +13,8 @@ export function activeWeekToRoadmapWeek(week: ActiveWeek, index: number): Week {
 
 export function alignRoadmapWithActivePlan(plans: Plan[]) {
   return plans.map((plan) => {
-    if (plan.id === "2026-08") return { ...plan, weeks: activePlan.slice(0, 5).map(activeWeekToRoadmapWeek) };
-    if (plan.id === "2026-09") return { ...plan, weeks: [...activePlan.slice(5, 8).map((week, index) => activeWeekToRoadmapWeek(week, index)), ...plan.weeks.slice(3)] };
+    if (plan.id === "2026-08") return { ...plan, title: "August 2026 Training Plan", priorities: ["Authoritative rolling eight-week prescription shown below", "RPE controls effort; pace is conditional on conditions and benchmarks", "Two primary strength sessions; Sunday Back + Core + Aesthetics follows shared recovery status"], weeks: activePlan.slice(0, 5).map(activeWeekToRoadmapWeek) };
+    if (plan.id === "2026-09") return { ...plan, title: "September 2026 Training Plan", priorities: ["Weeks overlapping the current eight-week Plan are authoritative", "Later September guidance is directional and will be updated from completed training", "RPE controls effort; do not force calendar-based pace improvement"], weeks: [...activePlan.slice(5, 8).map((week, index) => activeWeekToRoadmapWeek(week, index)), ...plan.weeks.slice(3)] };
     return plan;
   });
 }

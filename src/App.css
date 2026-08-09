@@ -95,6 +95,7 @@
 
 .app__nav-btn {
   font: inherit;
+  min-height: 44px;
   padding: 8px 12px;
   border-radius: 7px;
   border: 1px solid transparent;
@@ -105,6 +106,10 @@
   cursor: pointer;
   transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
 }
+
+.today-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.today-actions a, .today-actions button, .plan-workout-action { min-height: 44px; display: inline-flex; align-items: center; padding: 9px 13px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text-h); font: inherit; font-weight: 650; }
+.plan-workout-action { margin-top: 6px; }
 
 .app__nav-btn:hover {
   background: var(--row-alt);
@@ -244,7 +249,7 @@
 .strength-plan-rest > strong { color: var(--text-h); font-size: 15px; line-height: 1.25; }
 .strength-plan-rest > small { color: var(--text); font-size: 10px; }
 .strength-tabs { display: flex; gap: 4px; margin-bottom: 22px; padding: 5px; overflow-x: auto; border: 1px solid var(--border); border-radius: 11px; background: var(--surface); }
-.strength-tabs button { flex: 1 0 auto; min-height: 38px; padding: 8px 14px; border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--text); font: inherit; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; }
+.strength-tabs button { flex: 1 0 auto; min-height: 44px; padding: 8px 14px; border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--text); font: inherit; font-size: 12px; font-weight: 600; white-space: nowrap; cursor: pointer; }
 .strength-tabs button:hover { background: var(--row-alt); color: var(--text-h); }
 .strength-tabs button.is-active { border-color: var(--accent); background: var(--accent); color: var(--accent-foreground); box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 20%, transparent); }
 .strength-tabs button:focus-visible { outline: 3px solid var(--accent-border); outline-offset: 1px; }

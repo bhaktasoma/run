@@ -18,7 +18,7 @@ test("video references use safe YouTube searches with trusted-source qualifiers"
   assert.match(decodeURIComponent(rdl), /hospital sports medicine/);
   assert.match(decodeURIComponent(ankle), /physical therapist/);
   assert.deepEqual(SAFE_EXTERNAL_LINK_PROPS, { target: "_blank", rel: "noopener noreferrer" });
-  assert.equal(exerciseVideoLabel("Romanian deadlift"), "View Romanian deadlift demonstration on YouTube (opens in a new tab)");
+  assert.equal(exerciseVideoLabel("Romanian deadlift"), "View YouTube examples for Romanian deadlift (opens in a new tab)");
 });
 
 test("knee resilience uses the requested non-diagnostic label and safety message", () => {

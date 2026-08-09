@@ -51,4 +51,4 @@ export function exerciseVideoUrl(exercise: string) {
 }
 
 export const SAFE_EXTERNAL_LINK_PROPS = { target: "_blank", rel: "noopener noreferrer" } as const;
-export const exerciseVideoLabel = (exercise: string) => `View ${exercise} demonstration on YouTube (opens in a new tab)`;
+export const exerciseVideoLabel = (exercise: string) => `View YouTube examples for ${exercise} (opens in a new tab)`;

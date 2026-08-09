@@ -19,6 +19,7 @@ export default function App() {
   const [page, setPage] = useState<Page>({ kind: "today" });
   const [showOnboarding, setShowOnboarding] = useState(() => !onboardingWasDismissed());
   const [focusTodayLog, setFocusTodayLog] = useState(false);
+  const [focusStrengthSession, setFocusStrengthSession] = useState<string>();
   const moreMenuRef = useRef<HTMLDetailsElement>(null);
   const training = useTrainingStore();
   const selectedPlan = page.kind === "roadmap" ? plans.find((plan) => plan.id === page.id) ?? plans[0] : plans[0];
@@ -37,12 +38,12 @@ export default function App() {
     </nav>
     {showOnboarding && <PlanOnboarding onDismiss={dismissOnboarding} />}
     {page.kind === "today" ? <TodayPage store={training.store} onSaveEntry={training.upsertEntry} onSaveRoutine={training.upsertRoutineCompletion} onOpenStrength={() => navigate("strength")} focusLog={focusTodayLog} onLogFocused={() => setFocusTodayLog(false)} />
-      : page.kind === "current" ? <CurrentPlanPage store={training.store} onSaveCheckIn={training.upsertCheckIn} onSaveDecision={training.saveDecision} />
+      : page.kind === "current" ? <CurrentPlanPage store={training.store} onSaveCheckIn={training.upsertCheckIn} onSaveDecision={training.saveDecision} onOpenWorkout={(target, sessionId) => { setFocusStrengthSession(sessionId); navigate(target); }} />
       : page.kind === "progress" ? <ProgressPage store={training.store} onAddBenchmark={training.addBenchmark} onSavePaceGuidance={training.savePaceGuidance} onLogRun={openTodayLog} />
       : page.kind === "log" ? <RunLogPage store={training.store} onSave={training.upsertEntry} onDelete={training.deleteEntry} onRestore={training.restoreStore} />
       : page.kind === "goal" ? <GoalPage />
       : page.kind === "guides" ? <RunningGuidesPage />
-      : page.kind === "strength" ? <WorkoutPlanPage store={training.store} onSaveLog={training.upsertStrengthLog} onSaveDecision={training.saveStrengthDecision} onSaveRoutine={training.upsertRoutineCompletion} />
+      : page.kind === "strength" ? <WorkoutPlanPage store={training.store} onSaveLog={training.upsertStrengthLog} onSaveDecision={training.saveStrengthDecision} onSaveRoutine={training.upsertRoutineCompletion} focusSessionId={focusStrengthSession} />
       : <PlanPage plan={selectedPlan} plans={plans} onSelectPlan={(id) => setPage({ kind: "roadmap", id })} />}
   </div>;
 }
